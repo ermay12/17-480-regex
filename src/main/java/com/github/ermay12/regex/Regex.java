@@ -3,7 +3,12 @@
  */
 package com.github.ermay12.regex;
 
-public class Library {
+public class Regex {
+
+    public Regex(String expression){
+        ;
+    }
+
     public boolean someLibraryMethod() {
         return true;
     }
