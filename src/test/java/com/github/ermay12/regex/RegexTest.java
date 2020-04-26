@@ -3,6 +3,7 @@
  */
 package com.github.ermay12.regex;
 
+import com.google.common.collect.Streams;
 import org.junit.Test;
 
 import java.util.stream.Stream;
@@ -10,62 +11,41 @@ import java.util.stream.Stream;
 import static org.junit.Assert.*;
 
 public class RegexTest {
-    @Test public void testStringBasedRegex() {
+  @Test
+  public void testStringBasedRegex() {
 
+    Regex regex = new Regex("([A-Z])\\w+");
+    String input = "this Is the Example input String";
 
-        Regex regex = new Regex("([A-Z])\\w+");
-        String input = "this is the Example input String";
+    Stream<RegexMatch> matches = regex.getMatches(input);
 
-        Stream<RegexMatch> matches = regex.matches(input);
-        List<RegexMatch> allMatches = regex.findAllMatchesNow(input);
-        int i = 0;
-        for(RegexMatch match : matches){
-            Serial.out.println(match);
-            assertEquals(match, allMatches.get(i));
-            i++;
+    assertTrue(regex.doesMatch(input));
+
+    Streams.forEachPair(matches, Stream.of("Is", "Example", "String"),
+        (RegexMatch match, String expectedString) -> {
+          assertEquals(expectedString, match.toString());
         }
+    );
 
-        RegexMatch fourthMatch = regex.match(input, 4);
-        RegexMatch firstMatch = regex.firstMatch(input);
-        RegexMatch defaultMatch = regex.match(input);
-        assertEquals(firstMatch, defaultMatch);
+    RegexMatch match1 = regex.getMatch(input, 1);
+    assertEquals("Example", match1.toString());
 
-        assertTrue(regex.doesMatch(input));
-
-        ReplacementRegex replacement = new ReplacementRegex("$1word");
-
-        //String newString = regex.replace(input, replacement); //Either this
-        String newString = regex.replace(input).with(replacement);     //or this?  Idk i kinda like this tbh
-
-        assertEquals("this is the Eword input Sword", newString);
-    }
+    RegexMatch firstMatch = regex.firstMatch(input);
+    assertEquals("Is", firstMatch.toString());
 
 
-    @Test public void testNonStringBasedRegex() {
+    ReplacementRegex replacement = new ReplacementRegex("$1word");
 
-        RegexGroup group1 = new RegexGroup(
-            RegexCharSet.range('A', 'Z')
-        );
+    String newString = regex.replace(input, replacement);
 
-        Regex regex = new Regex(
-            group1,
-            RegexCharSet.WORD_CHAR.atLeastOne()
-        );
+    assertEquals("this Iword the Eword input Sword", newString);
 
-
-        String input = "this is the Example input String";
-
-        Stream<RegexMatch> matches = regex.matches(input);
-
-
-        ReplacementRegex replacement = new ReplacementRegex(
-            group1,
-            "word"
-        );
-
-        //String newString = regex.replace(input, replacement); //Either this
-        String newString = regex.replace(input).with(replacement);     //or this?  Idk i kinda like this tbh
-
-        assertEquals("this is the Eword input Sword", newString);
-    }
+    newString = regex.replace(input, (RegexMatch match) -> {
+      if (match.toString().equals("Is")) {
+        return "is";
+      }
+      return match.getGroup(1) + "word";
+    });
+    assertEquals("this is the Eword input Sword", newString);
+  }
 }
