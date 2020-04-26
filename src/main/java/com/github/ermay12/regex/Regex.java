@@ -39,6 +39,7 @@ public class Regex {
     return m.replaceAll(replacement.toString());
   }
 
+  @FunctionalInterface
   public interface ReplacementLambda {
     String matchCallback(RegexMatch match);
   }
