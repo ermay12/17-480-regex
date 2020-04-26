@@ -1,6 +1,6 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.*;
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 
 public class Youtube {
     public static void main(String[] args) {
@@ -20,6 +20,7 @@ public class Youtube {
                         anyAmount(
                                 not(choice('#', '&', '?'))
                         )
-                ).anyAmount(wildcard()).build();
+                ).anyAmount(string("asdasd")).build();
+        System.out.println(regex);
     }
 }

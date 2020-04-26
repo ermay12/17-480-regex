@@ -1,12 +1,13 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.*;
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 
 public final class RomanNumeral {
     static final String s = "^(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})";
 
     public static void main(String[] args) {
-        Regex regex = startLine()
+        Regex regex =
+                startLine()
                 .lookahead(wildcard())
                 .anyAmount('M')
                 .capture(
@@ -25,5 +26,6 @@ public final class RomanNumeral {
                                 optional('V').repeat('I', 0, 3)
                         )
                 ).build();
+        System.out.println(regex);
     }
 }

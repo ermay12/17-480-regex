@@ -1,6 +1,6 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.*;
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 
 public class PhoneNumber {
     public static void main(String[] args) {
@@ -13,11 +13,13 @@ public class PhoneNumber {
                                 whitespace()
                         )
                 ).build();
-        RegexBuilder.Standard builder = regex(separator);
+        RegexBuilder builder = regex(separator);
         for (int i = 0; i < 10; i++) {
             builder.capture(digit()).then(separator);
         }
 
         Regex phoneNumber = builder.build();
+
+        System.out.println(phoneNumber);
     }
 }

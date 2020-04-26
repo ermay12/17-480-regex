@@ -1,14 +1,15 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.*;
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 
 public class Email {
     public static void main(String[] args) {
         Regex regex = startLine()
-                .atLeastOne(wildcard())
+                .capture(atLeastOne(wildcard()))
                 .string("@")
-                .atLeastOne(wildcard())
+                .capture(atLeastOne(wildcard()))
                 .endLine()
                 .build();
+        System.out.println(regex);
     }
 }

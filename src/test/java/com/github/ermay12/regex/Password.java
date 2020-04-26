@@ -1,6 +1,6 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.*;
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 
 public class Password {
     public static void main(String[] args) {
