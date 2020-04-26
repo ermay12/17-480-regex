@@ -1,9 +1,13 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import org.junit.Test;
 
-public class PhoneNumber {
-    public static void main(String[] args) {
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static org.junit.Assert.assertEquals;
+
+public class PhoneNumberTest {
+    @Test
+    public void testPhoneNumber() {
         Regex separator =
                 optional(
                         or(
@@ -20,6 +24,8 @@ public class PhoneNumber {
 
         Regex phoneNumber = builder.build();
 
-        System.out.println(phoneNumber);
+
+        assertEquals("(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?",
+                     phoneNumber.toString());
     }
 }

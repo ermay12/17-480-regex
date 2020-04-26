@@ -1,9 +1,13 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import org.junit.Test;
 
-public class Youtube {
-    public static void main(String[] args) {
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static org.junit.Assert.assertEquals;
+
+public class YoutubeTest {
+    @Test
+    public void youtubeTest() {
         Regex regex =
                 startLine()
                 .anyAmount(wildcard())
@@ -21,6 +25,7 @@ public class Youtube {
                                 not(choice('#', '&', '?'))
                         )
                 ).anyAmount(string("asdasd")).build();
-        System.out.println(regex);
+        assertEquals("^.*(?:\\Qyoutu.be/\\E|\\Qv/\\E|\\Q/u/w/\\E|\\Qembed/\\E|\\Qwatch?\\E)\\??v?\\=?([^#&\\?]*)(?:\\Qasdasd\\E)*",
+                     regex.toString());
     }
 }

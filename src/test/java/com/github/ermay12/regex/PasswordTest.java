@@ -1,9 +1,13 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import org.junit.Test;
 
-public class Password {
-    public static void main(String[] args) {
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static org.junit.Assert.assertEquals;
+
+public class PasswordTest {
+    @Test
+    public void testPassword() {
         Regex regex =
                 startLine()
                 .lookahead(anyAmount(wildcard()).single(range('a', 'z')))
@@ -13,5 +17,7 @@ public class Password {
                 .repeatAtLeast(wildcard(), 8)
                 .endLine()
                 .build();
+        assertEquals("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w]).{8,}$",
+                     regex.toString());
     }
 }

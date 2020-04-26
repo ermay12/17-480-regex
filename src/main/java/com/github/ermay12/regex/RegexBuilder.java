@@ -225,7 +225,7 @@ public class RegexBuilder {
             cc.regex.append("[");
             cc.sanitizedAppend(c1);
             cc.regex.append("-");
-            cc.sanitizedAppend("c2");
+            cc.sanitizedAppend(c2);
             cc.regex.append("]");
             return cc;
         }

@@ -1,15 +1,19 @@
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import org.junit.jupiter.api.Test;
 
-public class Email {
-    public static void main(String[] args) {
+import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static org.junit.Assert.*;
+
+public class EmailTest {
+    @Test
+    public void testEmail() {
         Regex regex = startLine()
                 .capture(atLeastOne(wildcard()))
                 .string("@")
                 .capture(atLeastOne(wildcard()))
                 .endLine()
                 .build();
-        System.out.println(regex);
+        assertEquals("^(.+)@(.+)$", regex.toString());
     }
 }
