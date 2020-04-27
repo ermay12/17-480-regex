@@ -17,6 +17,7 @@ public class PhoneNumberTest {
                                 whitespace()
                         )
                 ).build();
+
         RegexBuilder builder = regex(separator);
         for (int i = 0; i < 10; i++) {
             builder.capture(digit()).then(separator);

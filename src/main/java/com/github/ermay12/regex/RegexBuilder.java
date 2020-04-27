@@ -34,7 +34,7 @@ public class RegexBuilder {
         }
     }
 
-    private static Regex badEscapeChecker = Regex.fromRawRegex(".*\\E.*");
+    private static Regex badEscapeChecker = Regex.fromRawRegex(".*\\\\E.*");
 
     protected void sanitizedAppend(String s) {
         //TODO(astanesc): Use a regex or .contains?

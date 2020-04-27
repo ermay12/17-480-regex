@@ -1,6 +1,6 @@
 package com.github.ermay12.regex;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
 import static org.junit.Assert.*;
