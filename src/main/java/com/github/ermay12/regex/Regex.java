@@ -14,6 +14,9 @@ public class Regex {
   public Regex(String expression) {
     pattern = Pattern.compile(expression);
   }
+  public static Regex fromRawRegex(String regex) {
+      return new Regex(regex);
+  }
 
   public RegexMatch getMatch(String input, int i) {
     Matcher m = pattern.matcher(input);
@@ -56,5 +59,9 @@ public class Regex {
     return m.results().map((MatchResult match) -> {
       return new RegexMatch(match);
     });
+  }
+
+  public String toString() {
+      return pattern.toString();
   }
 }
