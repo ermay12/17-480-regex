@@ -2,7 +2,7 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static com.github.ermay12.regex.Regex.*;
 import static org.junit.Assert.assertEquals;
 
 public class PhoneNumberTest {
@@ -10,21 +10,20 @@ public class PhoneNumberTest {
     public void testPhoneNumber() {
         Regex separator =
                 optional(
-                        or(
+                        oneOf(
                                 string("-"),
                                 string("("),
                                 string(")"),
-                                whitespace()
+                                CharacterClass.WHITESPACE
                         )
-                ).build();
+                );
 
-        RegexBuilder builder = regex(separator);
+        Regex phoneNumber = separator;
         for (int i = 0; i < 10; i++) {
-            builder.capture(digit()).then(separator);
+            phoneNumber = new Regex(phoneNumber,
+                                    capture(CharacterClass.DIGIT),
+                                    separator);
         }
-
-        Regex phoneNumber = builder.build();
-
 
         assertEquals("(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?(\\d)(?:(?:\\-|\\(|\\)|\\s))?",
                      phoneNumber.toString());

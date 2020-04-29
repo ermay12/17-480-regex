@@ -13,8 +13,7 @@ import static org.junit.Assert.*;
 public class RegexTest {
   @Test
   public void testStringBasedRegex() {
-
-    Regex regex = new Regex("([A-Z])\\w+");
+    Regex regex = Regex.fromRawRegex("([A-Z])\\w+");
     String input = "this Is the Example input String";
 
     Stream<RegexMatch> matches = regex.getMatches(input);
