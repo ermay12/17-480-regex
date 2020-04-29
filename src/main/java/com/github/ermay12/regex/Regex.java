@@ -3,15 +3,15 @@
  */
 package com.github.ermay12.regex;
 
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Regex {
   private Pattern pattern;
-  private String rawRegex;
+  protected String rawRegex;
   private final String privatesyncobj = "";
+
 
   protected Regex(String... components) {
     StringBuilder b = new StringBuilder();
@@ -181,16 +181,16 @@ public class Regex {
     return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
   }
 
-  public static Regex optional(char c) {
-    return new Regex(sanitized(c), "?");
+  public static Regex optional(String s) {
+    return new Regex(sanitized(s), "?");
   }
 
   public static Regex optional(Regex s) {
     return new Regex(s.selfAsGrouped(), "?");
   }
 
-  public static Regex repeat(char c, int min, int max) {
-    return new Regex(sanitized(c),
+  public static Regex repeat(String s, int min, int max) {
+    return new Regex(sanitized(s),
                       "{", Integer.toString(min), ",",
                       Integer.toString(max), "}");
   }
@@ -218,9 +218,6 @@ public class Regex {
     return new Regex(regex.toString());
   }
 
-  public static Regex single(CharacterClass c) {
-    return c;
-  }
 
   public static Regex string(String s) {
     return new Regex(sanitized(s));
