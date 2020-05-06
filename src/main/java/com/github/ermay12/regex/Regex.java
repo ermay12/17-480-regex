@@ -8,6 +8,226 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a compiled Regular expression. Instances of this class are immutable and
+ * safe to be used by multiple concurrent threads.
+ *
+ * <h4>Summary of Regular Expression Constructs</h4>
+ *
+ * <border="0" cellpadding="1" cellspacing="0" summary="Regular expression constructs, and what they match">
+ * <tbody>
+ *  <tr align="left">
+ *    <th bgcolor="#CCCCFF" align="left" id="construct">Construct</th>
+ *    <th bgcolor="#CCCCFF" align="left" id="matches">Matches</th>
+ *  </tr>
+ *
+ *  <tr><th>&nbsp;</th></tr>
+ *
+ *  <tr align="left"><th colspan="2" id="characters">Characters</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct characters"><i>single('x')</i></td>
+ *    <td headers="matches">The character 'x'. Note that this will escape 'x' if necessary
+ *                          (i.e. if it is a special regex character)</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct characters"><i>string("ab.")</i></td>
+ *    <td headers="matches">The string 'ab.'. Note that this will escape any characters if necessary
+ *                          (i.e. if it is a special regex character, such as the '.' in this example)</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct characters"><i>fromRawRegex("ab.")</i></td>
+ *    <td headers="matches">The regex 'ab.'. Note that this will <b>NOT</b> escape any characters
+ *                          (i.e. the '.' in this example)</td>
+ *  </tr>
+ *
+ *
+ *  <tr align="left"><th colspan="2" id="classes">Character Classes</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct classes"><i>single(CharacterClass)</i></td>
+ *    <td headers="matches">The same thing that the given character class matches. See {@link CharacterClass}</td>
+ *  </tr>
+ *
+ *
+ *  <tr align="left"><th colspan="2" id="predef">Predefined Character Classes</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct predef"><i>CharacterClass.WILDCARD</i></td>
+ *    <td headers="matches">Any character. See {@link CharacterClass#WILDCARD}</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct predef"><i>CharacterClass.DIGIT</i></td>
+ *    <td headers="matches">Any digit (0-9). See {@link CharacterClass#DIGIT}</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct predef"><i>CharacterClass.WORD_CHARACTER</i></td>
+ *    <td headers="matches">Any word character (a-z, A-Z, 0-9 and _). See {@link CharacterClass#WORD_CHARACTER}</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct predef"><i>CharacterClass.WHITESPACE</i></td>
+ *    <td headers="matches">Any whitespace character ( ,\t,\n,\x0B,\f\r). See {@link CharacterClass#WHITESPACE}</td>
+ *  </tr>
+ *
+ *
+ *  <tr align="left"><th colspan="2" id="bound">Boundaries</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>LINE_START</i></td>
+ *    <td headers="matches">The start of a line. If multi-line mode is off, then this matches the start of input</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>LINE_END</i></td>
+ *    <td headers="matches">The end of a line. If multi-line mode is off, then this matches the end of input</td>
+ *  </tr>
+ *
+ *  <tr align="left"><th colspan="2" id="bound">Quantifiers</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>optional(X)</i></td>
+ *    <td headers="matches">X, either once or not at all</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>anyAmount(X)</i></td>
+ *    <td headers="matches">X, zero or more times</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>atLeastOne(X)</i></td>
+ *    <td headers="matches">X, one or more times</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>repeatExactly(X, amount)</i></td>
+ *    <td headers="matches">X, repeated exactly amount times</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>repeatAtLeast(X, min)</i></td>
+ *    <td headers="matches">X, min or more times</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>repeatAtMost(X, max)</i></td>
+ *    <td headers="matches">X, repeated at most max times</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct bound"><i>repeat(X, min, max)</i></td>
+ *    <td headers="matches">X, repeated at least min and at most max times</td>
+ *  </tr>
+ *
+ *  <tr align="left"><th colspan="2" id="logical">Logical Operators</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct logical"><i>new Regex(X1, X2, ...)</i></td>
+ *    <td headers="matches">X1 followed by X2 followed by ...</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct logical"><i>concatenate(X1, X2, ...)</i></td>
+ *    <td headers="matches">X1 followed by X2 followed by ...</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct logical"><i>oneOf(X1, X2, ...)</i></td>
+ *    <td headers="matches">either X1 or X2 or ...</td>
+ *  </tr>
+ *
+ *  <tr align="left"><th colspan="2" id="capture">Capturing Groups</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>capturing(X)</i></td>
+ *    <td headers="matches">X, but the match is now stored as a capturing group</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>capturing(X, label)</i></td>
+ *    <td headers="matches">X, but the match is now stored as a named capturing group with name "label"</td>
+ *  </tr>
+ *
+ *  <tr align="left"><th colspan="2" id="back">Back References</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct back"><i>backReference(i)</i></td>
+ *    <td headers="matches">What the i'th capturing group matched</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct back"><i>backReference(label)</i></td>
+ *    <td headers="matches">What the capturing group with name "label" matched</td>
+ *  </tr>
+ *
+ *  <tr align="left"><th colspan="2" id="lookaround">Lookaround</th></tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>lookahead(X)</i></td>
+ *    <td headers="matches">asserts that the rest of the string matches X, but does not consume any characters</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>negativeLookahead(X)</i></td>
+ *    <td headers="matches">asserts that the rest of the string does not match X, but does not consume any characters</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>lookbehind(X)</i></td>
+ *    <td headers="matches">asserts that the precending bit of the string matches X, but does not consume any characters</td>
+ *  </tr>
+ *  <tr>
+ *    <td valign="top" headers="construct capture"><i>negativeLookbehind(X)</i></td>
+ *    <td headers="matches">asserts that the precending bit of the string does not match X, but does not consume any characters</td>
+ *  </tr>
+ *  </tbody>
+ * </table>
+ *
+ * <h4>Character Classes</h4>
+ * More on character classes can be found in the description for the {@link CharacterClass} class.
+ *
+ * <h4>Groups and Capturing</h4>
+ * <h5>Group Number</h5>
+ * <a name="gnumber">
+ * <p> Capturing groups are numbered by counting their opening parentheses from
+ *  left to right.  In the expression
+ *  <pre>
+        capturing(
+           concatenate(
+              capturing(string("A")),
+              capturing(
+                concatenate(string("B"),
+                            capturing(string("C"))
+                            )
+              )
+        )
+ </pre>, for example, there
+ *  are four such groups: </p>
+ *
+ *  <blockquote><table cellpadding="1" cellspacing="0" summary="Capturing group numberings">
+ *  <tbody><tr><th>1&nbsp;&nbsp;&nbsp;&nbsp;</th>
+ *      <td>The whole group</td></tr>
+ *  <tr><th>2&nbsp;&nbsp;&nbsp;&nbsp;</th>
+ *      <td><tt>capturing(string("A"))</tt></td></tr>
+ *  <tr><th>3&nbsp;&nbsp;&nbsp;&nbsp;</th>
+ *      <td><tt>capturing(concatenate(string("B"), capturing(string("C"))))
+ *  <tr><th>4&nbsp;&nbsp;&nbsp;&nbsp;</th>
+ *      <td><tt>capturing(string("C"))</tt></td></tr>
+ *  </tbody></table></blockquote>
+ *  <p> Group zero always stands for the entire expression.
+ *  </p>
+ *  <p>Capturing groups are so named because, during a match, each subsequence
+ *  of the input sequence that matches such a group is saved.  The captured
+ *  subsequence may be used later in the expression, via a back reference, and
+ *  may also be retrieved from the matcher once the match operation is complete.
+ *  </p>
+ *  </a>
+ *
+ *  <h5>Group Name</h5>
+ *  <p>A capturing group can also be assigned a "name", a <tt>named-capturing group</tt>,
+ *  and then be back-referenced later by the "name". Group names are composed of
+ *  the following characters. The first character must be a <tt>letter</tt>.
+ *
+ *  </p><ul>
+ *    <li> The uppercase letters <tt>'A'</tt> through <tt>'Z'</tt>
+ *         (<tt>'\u0041'</tt>&nbsp;through&nbsp;<tt>'\u005a'</tt>),
+ *    </li><li> The lowercase letters <tt>'a'</tt> through <tt>'z'</tt>
+ *         (<tt>'\u0061'</tt>&nbsp;through&nbsp;<tt>'\u007a'</tt>),
+ *    </li><li> The digits <tt>'0'</tt> through <tt>'9'</tt>
+ *         (<tt>'\u0030'</tt>&nbsp;through&nbsp;<tt>'\u0039'</tt>),
+ *  </li></ul>
+ *
+ *  <p>A <tt>named-capturing group</tt> is still numbered as described in
+ *  </a><a href="#gnumber">Group number</a>.
+ *  </p>
+ *
+ *  <p> The captured input associated with a group is always the subsequence
+ *  that the group most recently matched.  If a group is evaluated a second time
+ *  because of quantification then its previously-captured value, if any, will
+ *  be retained if the second evaluation fails.  Matching the string
+ *  <tt>"aba"</tt> against the expression <tt>atLeastOne(concatenate(string("a"), capture(optional(string("b"))))</tt>,
+ *  for example, leaves the group set to <tt>"b"</tt>.  All captured input is discarded at the
+ *  beginning of each match.
+ *  </p>
+ */
 public class Regex {
   private Pattern pattern;
   private String rawRegex;
@@ -29,6 +249,10 @@ public class Regex {
     }
     rawRegex = b.toString();
     pattern = null;
+  }
+
+  public Regex concatenate(Regex... components) {
+    return new Regex(components);
   }
 
   public static Regex fromRawRegex(String regex) {
@@ -205,6 +429,16 @@ public class Regex {
     return new Regex(g.selfAsGrouped(),
                      "{", Integer.toString(min), ",}");
   }
+  public static Regex repeatAtMost(Regex g, int max) {
+    return new Regex(g.selfAsGrouped(),
+            "{0,", Integer.toString(max), "}");
+  }
+
+  public static Regex repeatExactly(Regex g, int amount) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(amount), "}");
+  }
+
 
   public static Regex oneOf(Regex s1, Regex... ss) {
     StringBuilder regex = new StringBuilder();
@@ -220,6 +454,10 @@ public class Regex {
 
   public static Regex single(CharacterClass c) {
     return c;
+  }
+
+  public static Regex single(char c) {
+    return new Regex(sanitized(c));
   }
 
   public static Regex string(String s) {
