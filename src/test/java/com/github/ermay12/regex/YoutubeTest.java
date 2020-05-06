@@ -2,7 +2,10 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 import static com.github.ermay12.regex.Regex.*;
+import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.assertEquals;
 
 public class YoutubeTest {
@@ -22,11 +25,15 @@ public class YoutubeTest {
                 optional('v'),
                 optional('='),
                 capture(anyAmount(
-                        CharacterClass.without(CharacterClass.choice('#', '&', '?'))
+                        not(oneOf('#', '&', '?'))
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );
+
         assertEquals("^.*(?:\\Qyoutu.be/\\E|\\Qv/\\E|\\Q/u/w/\\E|\\Qembed/\\E|\\Qwatch?\\E)\\??v?\\=?([^#&\\?]*).*",
                      regex.toString());
+
+        Pattern p = Pattern.compile("[[a-z]&&[b-d&&[d-e]]]");
+        System.out.println(p.matcher("c").matches());
     }
 }

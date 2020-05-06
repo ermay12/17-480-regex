@@ -3,6 +3,7 @@ package com.github.ermay12.regex;
 import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
+import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.assertEquals;
 
 public class PhoneNumberTest {
@@ -14,14 +15,14 @@ public class PhoneNumberTest {
                                 string("-"),
                                 string("("),
                                 string(")"),
-                                CharacterClass.WHITESPACE
+                                WHITESPACE
                         )
                 );
 
         Regex phoneNumber = separator;
         for (int i = 0; i < 10; i++) {
             phoneNumber = new Regex(phoneNumber,
-                                    capture(CharacterClass.DIGIT),
+                                    capture(DIGIT),
                                     separator);
         }
 
