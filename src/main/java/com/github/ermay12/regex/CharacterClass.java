@@ -65,7 +65,7 @@ package com.github.ermay12.regex;
  *  </tr>
  *  <tr>
  *    <td style="padding: 1px;" valign="top" headers="construct combo"><i>intersection(X1, X2, ...)</i></td>
- *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any character that can be found in <b>all</b>>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any character that can be found in <b>all</b>
  *                                                                  of the character classes X1, X2, ...</td>
  *  </tr>
  *
