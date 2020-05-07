@@ -2,18 +2,19 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static com.github.ermay12.regex.Regex.*;
 import static org.junit.Assert.*;
 
 public class EmailTest {
     @Test
     public void testEmail() {
-        Regex regex = startLine()
-                .capture(atLeastOne(wildcard()))
-                .string("@")
-                .capture(atLeastOne(wildcard()))
-                .endLine()
-                .build();
+        Regex regex = new Regex(
+                LINE_START,
+                capture(atLeastOne(CharacterClass.WILDCARD)),
+                string("@"),
+                capture(atLeastOne(CharacterClass.WILDCARD)),
+                LINE_END
+        );
         assertEquals("^(.+)@(.+)$", regex.toString());
     }
 }

@@ -2,22 +2,24 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
-import static com.github.ermay12.regex.RegexBuilder.StaticHelpers.*;
+import static com.github.ermay12.regex.Regex.*;
+import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.assertEquals;
 
 public class PasswordTest {
     @Test
     public void testPassword() {
-        Regex regex =
-                startLine()
-                .lookahead(anyAmount(wildcard()).single(range('a', 'z')))
-                .lookahead(anyAmount(wildcard()).single(range('A', 'Z')))
-                .lookahead(anyAmount(wildcard()).single(digit()))
-                .lookahead(anyAmount(wildcard()).single(not(wordCharacter())))
-                .repeatAtLeast(wildcard(), 8)
-                .endLine()
-                .build();
-        assertEquals("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w]).{8,}$",
+        Regex regex = new Regex(
+                LINE_START,
+                lookahead(new Regex(anyAmount(WILDCARD), single(range('a', 'z')))),
+                lookahead(new Regex(anyAmount(WILDCARD), single(range('A', 'Z')))),
+                lookahead(new Regex(anyAmount(WILDCARD), single(DIGIT))),
+                lookahead(new Regex(anyAmount(WILDCARD), single(not(WORD_CHARACTER)))),
+                repeatAtLeast(WILDCARD, 8),
+                LINE_END
+        );
+        assertEquals("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W).{8,}$",
                      regex.toString());
+
     }
 }
