@@ -6,14 +6,27 @@ import java.util.regex.Matcher;
 public class RegexMatch {
   String matchString;
   MatchResult match;
+  Regex regex;
 
-  public RegexMatch(MatchResult m) {
-    this.matchString = m.group(0);
+  RegexMatch(MatchResult m, Regex regex) {
+    this.matchString = m.group();
     this.match = m;
+    this.regex = regex;
   }
 
-  public String getGroup(int i) {
-    return this.match.group(i);
+  public String getMatchString() {
+    return matchString;
+  }
+
+  public String getGroup(CapturingGroup group) {
+    if (!this.regex.groupToIndex.containsKey(group)) {
+      throw new IllegalArgumentException("Group passed in is not present in regex!");
+    }
+    return this.match.group(this.regex.groupToIndex.get(group));
+  }
+
+  public String getGroup(int number) {
+    return this.match.group(number);
   }
 
   @Override

@@ -3,8 +3,8 @@
  */
 package com.github.ermay12.regex;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -160,25 +160,14 @@ import java.util.stream.Stream;
  *  </tr>
  *
  *  <tr><th>&nbsp;</th></tr>
- *  <tr style="text-align: left"><th colspan="2" id="capture">Capturing Groups</th></tr>
- *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct capture"><i>capturing(X)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, but the match is now stored as a capturing group</td>
- *  </tr>
- *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct capture"><i>capturing(X, label)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, but the match is now stored as a named capturing group with name "label"</td>
- *  </tr>
- *
- *  <tr><th>&nbsp;</th></tr>
  *  <tr style="text-align: left"><th colspan="2" id="back">Back References</th></tr>
  *  <tr>
  *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(i)</i></td>
  *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the i'th capturing group matched</td>
  *  </tr>
  *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(label)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the capturing group with name "label" matched</td>
+ *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(group)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the capturing group passed in matched</td>
  *  </tr>
  *
  *  <tr><th>&nbsp;</th></tr>
@@ -201,76 +190,13 @@ import java.util.stream.Stream;
  *  </tr>
  *  </tbody>
  * </table>
- *
- * <h4>Character Classes</h4>
- * More on character classes can be found in the description for the {@link CharacterClass} class.
- *
- * <h4>Groups and Capturing</h4>
- * <h5>Group Number</h5>
- * <p> Capturing groups are numbered by counting their opening parentheses from
- *  left to right.  In the expression </p>
- *  <pre>
-        capturing(
-           concatenate(
-              capturing(string("A")),
-              capturing(
-                concatenate(string("B"),
-                            capturing(string("C"))
-                            )
-              )
-        )
- </pre>
- * <p> there are four such groups: </p>
- *
- *  <blockquote><table><caption>Capturing group numberings</caption>
- *  <tbody><tr><th>1&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>The whole group</td></tr>
- *  <tr><th>2&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(string("A"))</td></tr>
- *  <tr><th>3&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(concatenate(string("B"), capturing(string("C"))))
- *  <tr><th>4&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(string("C"))</td></tr>
- *  </tbody></table></blockquote>
- *  <p> Group zero always stands for the entire expression.
- *  </p>
- *  <p>Capturing groups are so named because, during a match, each subsequence
- *  of the input sequence that matches such a group is saved.  The captured
- *  subsequence may be used later in the expression, via a back reference, and
- *  may also be retrieved from the matcher once the match operation is complete.
- *  </p>
- *
- *  <h5>Group Name</h5>
- *  <p>A capturing group can also be assigned a "name", a named capturing group,
- *  and then be back-referenced later by the "name". Group names are composed of
- *  the following characters. The first character must be a letter.
- *
- *  </p><ul>
- *    <li> The uppercase letters 'A' through 'Z'
- *         ('\u0041'&nbsp;through&nbsp;'\u005a'),
- *    </li><li> The lowercase letters 'a' through 'z'
- *         ('\u0061'&nbsp;through&nbsp;'\u007a'),
- *    </li><li> The digits '0' through '9'
- *         ('\u0030'&nbsp;through&nbsp;'\u0039'),
- *  </li></ul>
- *
- *  <p>A named-capturing group is still numbered as described in
- *  Group number.
- *  </p>
- *
- *  <p> The captured input associated with a group is always the subsequence
- *  that the group most recently matched.  If a group is evaluated a second time
- *  because of quantification then its previously-captured value, if any, will
- *  be retained if the second evaluation fails.  Matching the string
- *  "aba" against the expression atLeastOne(concatenate(string("a"), capture(optional(string("b")))),
- *  for example, leaves the group set to "b".  All captured input is discarded at the
- *  beginning of each match.
- *  </p>
  */
 public class Regex {
   private Pattern pattern;
   private String rawRegex;
-  private final String privatesyncobj = "";
+  private final Object privatesyncobj = new Object();
+  Map<CapturingGroup, Integer> groupToIndex = new HashMap<>();
+  int numGroups = 0;
 
   /*
    ****************
@@ -292,6 +218,20 @@ public class Regex {
     pattern = null;
   }
 
+
+  /**
+   * Constructs a Regular Expression from the regular expression subcomponents.
+   * Takes group indexing regex from a base regex.
+   * Note that this method does not escape any characters
+   * @param base the regex to copy group indexing info from
+   * @param components the sub-components of the regular expression
+   */
+  Regex(Regex base, String... components) {
+    this(components);
+    this.numGroups = base.numGroups;
+    this.groupToIndex = base.groupToIndex;
+  }
+
   /**
    * Constructs a regular expression from the given sub-components. The
    * new Regex constructed will be the concatenation of all of the subcomponents.
@@ -302,8 +242,9 @@ public class Regex {
    */
   public Regex(Regex... components) {
     StringBuilder b = new StringBuilder();
+    numGroups = 0;
     for(Regex inner : components) {
-      b.append(inner.rawRegex);
+      appendRegex(b, inner);
     }
     rawRegex = b.toString();
     pattern = null;
@@ -424,7 +365,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
    */
   public static Regex optional(Regex r, EvaluationMethod t) {
-    return new Regex(r.selfAsGrouped(), "?", t.toRegex());
+    return new Regex(r, r.selfAsGrouped(), "?", t.toRegex());
   }
 
   /**
@@ -468,7 +409,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given regex repeated any number of times.
    */
   public static Regex anyAmount(Regex r, EvaluationMethod t) {
-    return new Regex(r.selfAsGrouped(), "*", t.toRegex());
+    return new Regex(r, r.selfAsGrouped(), "*", t.toRegex());
   }
 
   /**
@@ -507,7 +448,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
    */
   public static Regex atLeastOne(Regex r, EvaluationMethod t) {
-    return new Regex(r.selfAsGrouped(), "+", t.toRegex());
+    return new Regex(r, r.selfAsGrouped(), "+", t.toRegex());
   }
 
   /**
@@ -564,7 +505,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
    */
   public static Regex repeat(Regex g, int min, int max, EvaluationMethod t) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(min), ",",
             Integer.toString(max), "}", t.toRegex());
   }
@@ -593,7 +534,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
    */
   public static Regex repeatExactly(Regex g, int amount) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(amount), "}");
   }
 
@@ -645,7 +586,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
    */
   public static Regex repeatAtLeast(Regex g, int min, EvaluationMethod t) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(min), ",}", t.toRegex());
   }
 
@@ -697,7 +638,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
    */
   public static Regex repeatAtMost(Regex g, int max, EvaluationMethod t) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{0,", Integer.toString(max), "}", t.toRegex());
   }
 
@@ -716,7 +657,7 @@ public class Regex {
    * @param components the sub-components of the regular expression
    * @return a new regular expression matching the concatenation of the arguments
    */
-  public Regex concatenate(Regex... components) {
+  public static Regex concatenate(Regex... components) {
     return new Regex(components);
   }
 
@@ -728,68 +669,21 @@ public class Regex {
    */
   public static Regex oneOf(Regex... rs) {
     if(rs.length > 1) {
-      StringBuilder regex = new StringBuilder();
-      regex.append("(?:");
-      regex.append(rs[0].rawRegex);
+      Regex regex = new Regex("");
+      StringBuilder b = new StringBuilder();
+      b.append("(?:");
+      regex.appendRegex(b, rs[0]);
       for (int i = 1; i < rs.length; i++) {
-        regex.append("|");
-        regex.append(rs[i].rawRegex);
+        b.append("|");
+        regex.appendRegex(b, rs[i]);
       }
-      regex.append(")");
-      return new Regex(regex.toString());
+      b.append(")");
+      regex.rawRegex = b.toString();
+      return regex;
     } else if (rs.length == 1) {
       return rs[0];
     } else {
       return new Regex("");
-    }
-  }
-
-  /*
-   ********************
-   * Capturing Groups *
-   ********************
-   */
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a capturing group
-   *
-   * See: Capturing groups in the class documentation
-   * @param r The regex to capture
-   * @return a regex matching the same thing that the original regex matches, but now as a capturing group
-   */
-  public static Regex capture(Regex r) {
-    return new CapturingGroup("(", r.rawRegex, ")");
-  }
-
-  private static Regex regexLabel = Regex.fromRawRegex("^[a-zA-Z][a-zA-Z0-9]*$");
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a named capturing
-   * group. See: Named capturing groups in the class documentation
-   *
-   * The label must consist of a letter followed by any number of alphanumeric characters and nothing else.
-   *
-   * @param s the regex to capture
-   * @param label the label of the named capturing group
-   * @return a regex which matches the same thing that the original regex matches, but now as a named capturing
-   *    * group.
-   */
-  public static Regex capture(Regex s, String label) throws IllegalArgumentException {
-    if(!regexLabel.doesMatch(label)) {
-      throw new IllegalArgumentException("Label must be ok");
-    }
-
-    return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
-  }
-
-  private static class CapturingGroup extends Regex {
-    public CapturingGroup(String... components) {
-      super(components);
-    }
-
-    @Override
-    String selfAsGrouped() {
-      return getRawRegex();
     }
   }
 
@@ -811,14 +705,13 @@ public class Regex {
   }
 
   /**
-   * Returns a new regex that matches the same thing that the capturing group with label label within a larger regex matched.
+   * Returns a new regex that matches the last thing that the capturing group passed in matched.
    *
-   * See Named Capturing Groups in the class-level documentation
-   * @param label Which capturing group to match on
-   * @return a regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   * @param group Which capturing group to match on
+   * @return a regex that matches the same thing that the last instance of group matched.
    */
-  public static Regex backReference(String label) {
-    return new Regex("\\k", label);
+  public static Regex backReference(CapturingGroup group) {
+    return new Regex("\\k", group.label);
   }
 
   /*
@@ -837,7 +730,7 @@ public class Regex {
    * @return a new regex that asserts that the rest of the string matches r, but does not consume any characters
    */
   public static Regex lookahead(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?=",
             r.rawRegex,
             ")"
@@ -854,7 +747,7 @@ public class Regex {
    * @return a new regex that asserts that the rest of the string does not match r, but does not consume any characters
    */
   public static Regex negativeLookahead(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?!",
             r.rawRegex,
             ")"
@@ -872,7 +765,7 @@ public class Regex {
    * @return a new regex that asserts that the preceding part of the string matches r, but does not consume any characters
    */
   public static Regex lookbehind(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?<=",
             r.rawRegex,
             ")"
@@ -890,7 +783,7 @@ public class Regex {
    * @return a new regex that asserts that the preceding part of the string does not match r, but does not consume any characters
    */
   public static Regex negativeLookbehind(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?<!",
             r.rawRegex,
             ")"
@@ -910,7 +803,7 @@ public class Regex {
    */
   public Stream<RegexMatch> getMatches(String input) {
     Matcher m = getMatcher(input);
-    return m.results().map(RegexMatch::new);
+    return m.results().map((result) -> new RegexMatch(result, this));
   }
 
   /**
@@ -928,7 +821,7 @@ public class Regex {
     for (int j = 0; j <= i; j++) {
       m.find();
     }
-    return new RegexMatch(m);
+    return new RegexMatch(m.toMatchResult(), this);
   }
 
   /**
@@ -942,7 +835,7 @@ public class Regex {
   public RegexMatch firstMatch(String input) {
     Matcher m = getMatcher(input);
     m.find();
-    return new RegexMatch(m);
+    return new RegexMatch(m.toMatchResult(), this);
   }
 
   /**
@@ -963,7 +856,7 @@ public class Regex {
 
   public String replace(String input, ReplacementLambda l) {
     Matcher m = getMatcher(input);
-    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match)));
+    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match, this)));
   }
   
   /*
@@ -990,6 +883,27 @@ public class Regex {
    * Private Helpers *
    *******************
    */
+
+  /**
+   * Appends a regex's string to a builder, while also updating capturing group information.
+   * @param b the builder being used
+   * @param regex the regex, which may contain capturing groups
+   */
+  private void appendRegex(StringBuilder b, Regex regex) {
+    b.append(regex.rawRegex);
+    final int curGroupIndex = numGroups;
+    regex.groupToIndex.forEach((group, index) -> {
+      if (this.groupToIndex.containsKey(group)) {
+        // Remove label from capturing group
+        String toFind = "?<" + group.label + ">";
+        int startIndex = b.indexOf(toFind);
+        assert(startIndex != -1);
+        b.delete(startIndex, startIndex + toFind.length());
+      }
+      this.groupToIndex.put(group, index + curGroupIndex);
+    });
+    numGroups += regex.numGroups;
+  }
 
   /**
    * Returns a matcher on the given input
@@ -1033,14 +947,8 @@ public class Regex {
   static String sanitized(String s) {
     //TODO(astanesc): Use a regex or .contains?
     StringBuilder b = new StringBuilder();
-    if(s.contains("\\E") || s.length() == 1) {
-      for (char c : s.toCharArray()) {
-        b.append(sanitized(c));
-      }
-    } else {
-      b.append("\\Q");
-      b.append(s);
-      b.append("\\E");
+    for (char c : s.toCharArray()) {
+      b.append(sanitized(c));
     }
     return b.toString();
   }
