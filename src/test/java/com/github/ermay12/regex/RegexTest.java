@@ -27,10 +27,10 @@ public class RegexTest {
         }
     );
 
-    RegexMatch match1 = regex.getMatch(input, 1);
+    RegexMatch match1 = regex.getMatch(input, 1).get();
     assertEquals("Example", match1.toString());
 
-    RegexMatch firstMatch = regex.firstMatch(input);
+    RegexMatch firstMatch = regex.firstMatch(input).get();
     assertEquals("Is", firstMatch.toString());
 
 
