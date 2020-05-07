@@ -463,12 +463,16 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated any number of times.
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated any number of times.
+   * Returns a regex which matches any string that consists of the given string repeated any number of times.
+   * @param s the string to compose on
+   * @return a regex which matches any string that consists of the given string repeated any number of times.
    */
-  public static Regex anyAmount(char c) {
-    return new Regex(sanitized(c), "*");
+  public static Regex anyAmount(String s) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "*");
+    } else {
+      return new Regex("(?:", sanitized(s), ")*");
+    }
   }
 
   /**
@@ -499,12 +503,16 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character either once or not at all
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated at most once
+   * Returns a regex which matches any string that consists of the given string either once or not at all
+   * @param s the string to compose on
+   * @return a regex which matches any string that consists of the given string repeated at most once
    */
-  public static Regex optional(char c) {
-    return new Regex(sanitized(c), "?");
+  public static Regex optional(String s) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "?");
+    } else {
+      return new Regex("(?:", sanitized(s), ")?");
+    }
   }
 
   /**
@@ -517,16 +525,23 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated between min and max times
-   * @param c the character to repeat
+   * Returns a regex which matches any string that consists of the given string repeated between min and max times
+   * @param s the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated between min and max times
+   * @return a regex which matches any string that consists of the given string repeated between min and max times
    */
-  public static Regex repeat(char c, int min, int max) {
-    return new Regex(sanitized(c),
-                      "{", Integer.toString(min), ",",
-                      Integer.toString(max), "}");
+  public static Regex repeat(String s, int min, int max) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}");
+    }
   }
 
   /**
@@ -543,14 +558,20 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at least min times
-   * @param c the character to repeat
+   * Returns a regex which matches any string that consists of the given string repeated at least min times
+   * @param s the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated at least min times
+   * @return a regex which matches any string that consists of the given string repeated at least min times
    */
-  public static Regex repeatAtLeast(char c, int min) {
-    return new Regex(sanitized(c),
-            "{", Integer.toString(min), ",}");
+  public static Regex repeatAtLeast(String s, int min) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(min), ",}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(min), ",}");
+    }
   }
 
   /**
@@ -565,14 +586,20 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at most max times
-   * @param c the character to repeat
+   * Returns a regex which matches any string that consists of the given string repeated at most max times
+   * @param s the string to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated at most max times
+   * @return a regex which matches any string that consists of the given string repeated at most max times
    */
-  public static Regex repeatAtMost(char c, int max) {
-    return new Regex(sanitized(c),
-            "{0,", Integer.toString(max), "}");
+  public static Regex repeatAtMost(String s, int max) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{0,", Integer.toString(max), "}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{0,", Integer.toString(max), "}");
+    }
   }
 
   /**
@@ -587,14 +614,20 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated exactly amount times
-   * @param c the character to repeat
+   * Returns a regex which matches any string that consists of the given string repeated exactly amount times
+   * @param s the string to repeat
    * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of the given character repeated exactly amount times
+   * @return a regex which matches any string that consists of the given string repeated exactly amount times
    */
-  public static Regex repeatExactly(char c, int amount) {
-    return new Regex(sanitized(c),
-            "{", Integer.toString(amount), "}");
+  public static Regex repeatExactly(String s, int amount) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(amount), "}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(amount), "}");
+    }
   }
 
   /**
