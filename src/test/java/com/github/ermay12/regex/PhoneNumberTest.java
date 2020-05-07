@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
+import static com.github.ermay12.regex.CapturingGroup.*;
 import static org.junit.Assert.assertEquals;
 
 public class PhoneNumberTest {

@@ -4,7 +4,10 @@
 package com.github.ermay12.regex;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -241,6 +244,7 @@ public class Regex {
   private Pattern pattern;
   private String rawRegex;
   private final String privatesyncobj = "";
+  protected Map<CapturingGroup, Integer> groupToIndex = new HashMap<>();
 
   /*
    ****************
@@ -272,8 +276,14 @@ public class Regex {
    */
   public Regex(Regex... components) {
     StringBuilder b = new StringBuilder();
+    int groupIndex = 1;
     for(Regex inner : components) {
       b.append(inner.rawRegex);
+      final int curGroupIndex = groupIndex;
+      inner.groupToIndex.forEach((group, index) -> {
+        this.groupToIndex.put(group, index + curGroupIndex - 1);
+      });
+      groupIndex += inner.groupToIndex.size();
     }
     rawRegex = b.toString();
     pattern = null;
@@ -576,55 +586,6 @@ public class Regex {
   }
 
   /*
-   ********************
-   * Capturing Groups *
-   ********************
-   */
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a capturing group
-   *
-   * See: Capturing groups in the class documentation
-   * @param r The regex to capture
-   * @return a regex matching the same thing that the original regex matches, but now as a capturing group
-   */
-  public static Regex capture(Regex r) {
-    return new CapturingGroup("(", r.rawRegex, ")");
-  }
-
-  private static Regex regexLabel = Regex.fromRawRegex("^[a-zA-Z][a-zA-Z0-9]*$");
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a named capturing
-   * group. See: Named capturing groups in the class documentation
-   *
-   * The label must consist of a letter followed by any number of alphanumeric characters and nothing else.
-   *
-   * @param s the regex to capture
-   * @param label the label of the named capturing group
-   * @return a regex which matches the same thing that the original regex matches, but now as a named capturing
-   *    * group.
-   */
-  public static Regex capture(Regex s, String label) throws IllegalArgumentException {
-    if(!regexLabel.doesMatch(label)) {
-      throw new IllegalArgumentException("Label must be ok");
-    }
-
-    return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
-  }
-
-  private static class CapturingGroup extends Regex {
-    public CapturingGroup(String... components) {
-      super(components);
-    }
-
-    @Override
-    String selfAsGrouped() {
-      return getRawRegex();
-    }
-  }
-
-  /*
    *******************
    * Back-References *
    *******************
@@ -666,7 +627,7 @@ public class Regex {
    */
   public Stream<RegexMatch> getMatches(String input) {
     Matcher m = getMatcher(input);
-    return m.results().map(RegexMatch::new);
+    return m.results().map((result) -> new RegexMatch(result, this));
   }
 
   /**
@@ -684,7 +645,7 @@ public class Regex {
     for (int j = 0; j <= i; j++) {
       m.find();
     }
-    return new RegexMatch(m);
+    return new RegexMatch(m.toMatchResult(), this);
   }
 
   /**
@@ -698,7 +659,7 @@ public class Regex {
   public RegexMatch firstMatch(String input) {
     Matcher m = getMatcher(input);
     m.find();
-    return new RegexMatch(m);
+    return new RegexMatch(m.toMatchResult(), this);
   }
 
   /**
@@ -719,7 +680,7 @@ public class Regex {
 
   public String replace(String input, ReplacementLambda l) {
     Matcher m = getMatcher(input);
-    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match)));
+    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match, this)));
   }
 
 

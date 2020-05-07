@@ -3,6 +3,7 @@ package com.github.ermay12.regex;
 import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
+import static com.github.ermay12.regex.CapturingGroup.*;
 import static org.junit.Assert.assertEquals;
 
 public final class RomanNumeralTest {
