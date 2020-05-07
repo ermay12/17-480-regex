@@ -229,7 +229,7 @@ public class Regex {
   Regex(Regex base, String... components) {
     this(components);
     this.numGroups = base.numGroups;
-    this.groupToIndex = base.groupToIndex;
+    this.groupToIndex.putAll(base.groupToIndex);
   }
 
   /**
