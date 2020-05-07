@@ -5,6 +5,7 @@ package com.github.ermay12.regex;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -882,9 +883,9 @@ public class Regex {
     return m.replaceAll(replacement.toString());
   }
 
-  public String replace(String input, ReplacementLambda l) {
+  public String replace(String input, Function<RegexMatch, String> l) {
     Matcher m = getMatcher(input);
-    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match, this)));
+    return m.replaceAll(match -> l.apply(new RegexMatch(match, this)));
   }
   
   /*
