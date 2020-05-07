@@ -844,16 +844,16 @@ public class Regex {
    * @param input The string that the regex should be matched against
    * @param i which match to return
    * @return the i'th section of the input that matches this regex,
-   * or null if there are less than i matches
+   * or empty if there are less than i matches
    */
-  public RegexMatch getMatch(String input, int i) {
+  public Optional<RegexMatch> getMatch(String input, int i) {
     Matcher m = getMatcher(input);
     for (int j = 0; j <= i; j++) {
       if (!m.find()) {
-        return null;
+        return Optional.empty();
       }
     }
-    return new RegexMatch(m.toMatchResult(), this);
+    return Optional.of(new RegexMatch(m.toMatchResult(), this));
   }
 
   /**
@@ -862,14 +862,14 @@ public class Regex {
    * This method is equivalent to getMatch(input, 0)
    *
    * @param input The string that the regex should be matched against
-   * @return the first section of the input that matches this regex, or null if there is no match
+   * @return the first section of the input that matches this regex, or empty if there is no match
    */
-  public RegexMatch firstMatch(String input) {
+  public Optional<RegexMatch> firstMatch(String input) {
     Matcher m = getMatcher(input);
     if (m.find()) {
-      return new RegexMatch(m.toMatchResult(), this);
+      return Optional.of(new RegexMatch(m.toMatchResult(), this));
     } else {
-      return null;
+      return Optional.empty();
     }
   }
 
