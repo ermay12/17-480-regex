@@ -38,6 +38,6 @@ repositories {
 
 dependencies {
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation "com.google.guava:guava:29.0-jre"
 }

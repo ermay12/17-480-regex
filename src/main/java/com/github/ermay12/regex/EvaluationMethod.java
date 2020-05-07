@@ -32,14 +32,14 @@ public enum EvaluationMethod {
     LAZILY;
 
     String toRegex() {
+        assert(this == GREEDILY || this == POSSESSIVELY || this == LAZILY);
         switch(this) {
             case GREEDILY:
                 return "";
             case POSSESSIVELY:
                 return "+";
-            case LAZILY:
+            default:
                 return "?";
         }
-        return "";
     }
 }
