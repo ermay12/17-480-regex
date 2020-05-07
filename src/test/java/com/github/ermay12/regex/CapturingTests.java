@@ -15,28 +15,28 @@ public class CapturingTests {
         Regex captureFun = concatenate(string("hi"), cap, string("foobar"));
 
         assertTrue(captureFun.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", captureFun.firstMatch("hi123foobar").getGroup(0));
-        assertEquals("123", captureFun.firstMatch("hi123foobar").getGroup(1));
-        assertEquals("123", captureFun.firstMatch("hi123foobar").getGroup(cap));
+        assertEquals("hi123foobar", captureFun.firstMatch("hi123foobar").get().getGroup(0));
+        assertEquals("123", captureFun.firstMatch("hi123foobar").get().getGroup(1));
+        assertEquals("123", captureFun.firstMatch("hi123foobar").get().getGroup(cap));
         assertThrows(IllegalArgumentException.class, () -> {
-            captureFun.firstMatch("hi123foobar").getGroup(badcap);
+            captureFun.firstMatch("hi123foobar").get().getGroup(badcap);
         });
 
         CapturingGroup cap2 = capture(anyAmount(DIGIT));
         Regex anyAmount = concatenate(string("hi"), cap2, string("foobar"));
 
         assertTrue(anyAmount.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", anyAmount.firstMatch("hi123foobar").getGroup(0));
-        assertEquals("123", anyAmount.firstMatch("hi123foobar").getGroup(1));
-        assertEquals("123", anyAmount.firstMatch("hi123foobar").getGroup(cap2));
+        assertEquals("hi123foobar", anyAmount.firstMatch("hi123foobar").get().getGroup(0));
+        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().getGroup(1));
+        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().getGroup(cap2));
 
         CapturingGroup cap3 = capture(anyAmount(DIGIT));
         Regex lastOnly = concatenate(string("hi"), cap3, string("foobar"));
 
         assertTrue(lastOnly.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", lastOnly.firstMatch("hi123foobar").getGroup(0));
-        assertEquals("123", lastOnly.firstMatch("hi123foobar").getGroup(1));
-        assertEquals("123", lastOnly.firstMatch("hi123foobar").getGroup(cap3));
+        assertEquals("hi123foobar", lastOnly.firstMatch("hi123foobar").get().getGroup(0));
+        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().getGroup(1));
+        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().getGroup(cap3));
     }
 
     @Test
@@ -51,18 +51,18 @@ public class CapturingTests {
         Regex r = concatenate(caps[0], caps[1], caps[2], caps[3], caps[4]);
 
         assertTrue(r.doesMatch("1h3 a"));
-        assertEquals("1h3 a", r.firstMatch("1h3 a").getGroup(0));
-        assertEquals("1", r.firstMatch("1h3 a").getGroup(1));
-        assertEquals("h", r.firstMatch("1h3 a").getGroup(2));
-        assertEquals("3", r.firstMatch("1h3 a").getGroup(3));
-        assertEquals(" ", r.firstMatch("1h3 a").getGroup(4));
-        assertEquals("a", r.firstMatch("1h3 a").getGroup(5));
+        assertEquals("1h3 a", r.firstMatch("1h3 a").get().getGroup(0));
+        assertEquals("1", r.firstMatch("1h3 a").get().getGroup(1));
+        assertEquals("h", r.firstMatch("1h3 a").get().getGroup(2));
+        assertEquals("3", r.firstMatch("1h3 a").get().getGroup(3));
+        assertEquals(" ", r.firstMatch("1h3 a").get().getGroup(4));
+        assertEquals("a", r.firstMatch("1h3 a").get().getGroup(5));
 
-        assertEquals("1", r.firstMatch("1h3 a").getGroup(caps[0]));
-        assertEquals("h", r.firstMatch("1h3 a").getGroup(caps[1]));
-        assertEquals("3", r.firstMatch("1h3 a").getGroup(caps[2]));
-        assertEquals(" ", r.firstMatch("1h3 a").getGroup(caps[3]));
-        assertEquals("a", r.firstMatch("1h3 a").getGroup(caps[4]));
+        assertEquals("1", r.firstMatch("1h3 a").get().getGroup(caps[0]));
+        assertEquals("h", r.firstMatch("1h3 a").get().getGroup(caps[1]));
+        assertEquals("3", r.firstMatch("1h3 a").get().getGroup(caps[2]));
+        assertEquals(" ", r.firstMatch("1h3 a").get().getGroup(caps[3]));
+        assertEquals("a", r.firstMatch("1h3 a").get().getGroup(caps[4]));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class CapturingTests {
 
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
-        RegexMatch m = r.firstMatch("123 a-41abba");
+        RegexMatch m = r.firstMatch("123 a-41abba").get();
         assertEquals("123 a-41abba", m.getGroup(0));
         assertEquals("123 a-41abba", m.getGroup(1));
         assertEquals("123 a", m.getGroup(2));
@@ -99,7 +99,7 @@ public class CapturingTests {
 
         Regex r1 = concatenate(c1, c1, c1);
         assertTrue(r1.doesMatch("123"));
-        RegexMatch m1 = r1.firstMatch("123 a-41abba");
+        RegexMatch m1 = r1.firstMatch("123 a-41abba").get();
         assertEquals("123", m1.getGroup(0));
         assertEquals("1", m1.getGroup(1));
         assertEquals("2", m1.getGroup(2));
@@ -114,7 +114,7 @@ public class CapturingTests {
 
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
-        RegexMatch m = r.firstMatch("123 a-41abba");
+        RegexMatch m = r.firstMatch("123 a-41abba").get();
         assertEquals("123 a-41abba", m.getGroup(0));
         assertEquals("123 a-41abba", m.getGroup(1));
         assertEquals("123 a", m.getGroup(2));
@@ -187,7 +187,7 @@ public class CapturingTests {
 
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
-        RegexMatch m = r.firstMatch("123 a-41abba");
+        RegexMatch m = r.firstMatch("123 a-41abba").get();
         assertEquals("123 a-41abba", m.getGroup(0));
         assertEquals("123 a-41abba", m.getGroup(1));
         assertEquals("123 a", m.getGroup(2));
