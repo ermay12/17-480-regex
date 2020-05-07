@@ -844,7 +844,7 @@ public class Regex {
    * @param input The string that the regex should be matched against
    * @param i which match to return
    * @return the i'th section of the input that matches this regex,
-   * or empty if there are less than i matches
+   * or empty if there are less than i + 1 matches. i is 0-indexed.
    */
   public Optional<RegexMatch> getMatch(String input, int i) {
     Matcher m = getMatcher(input);
