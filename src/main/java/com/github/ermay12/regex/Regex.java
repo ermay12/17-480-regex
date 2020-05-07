@@ -114,7 +114,37 @@ import java.util.stream.Stream;
  *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, repeated at least min and at most max times</td>
  *  </tr>
  *
- *  <tr><th>&nbsp;</th></tr>
+ *  <tr style="text-align: left"><th colspan="2" id="quant">Alternative Evaluation type quantifiers</th></tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>optional(X, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, either once or not at all, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>anyAmount(X, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, zero or more times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>atLeastOne(X, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, one or more times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>repeatExactly(X, amount, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, repeated exactly amount times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>repeatAtLeast(X, min, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, min or more times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>repeatAtMost(X, max, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, repeated at most max times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct quant"><i>repeat(X, min, max, T)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, repeated at least min and at most max times, using the provided {@link EvaluationType} T</td>
+ *  </tr>
+ *
+ *  <tr><th>&nbsp;</th></tr>g
  *  <tr style="text-align: left"><th colspan="2" id="logical">Logical Operators</th></tr>
  *  <tr>
  *    <td style="padding: 1px;" valign="top" headers="construct logical"><i>new Regex(X1, X2, ...)</i></td>
@@ -376,6 +406,32 @@ public class Regex {
   }
 
   /**
+   * Returns a regex which matches any string that consists of the given string either once or not at all
+   * This uses the provide Evaluation method
+   * @param s the string to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given string repeated at most once
+   */
+  public static Regex optional(String s, EvaluationType t) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "?", t.toRegex());
+    } else {
+      return new Regex("(?:", sanitized(s), ")?", t.toRegex());
+    }
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated either once or not at all.
+   * This uses the provide Evaluation method
+   * @param r the regex to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   */
+  public static Regex optional(Regex r, EvaluationType t) {
+    return new Regex(r.selfAsGrouped(), "?", t.toRegex());
+  }
+
+  /**
    * Returns a regex which matches any string that consists of the given string repeated any number of times.
    * @param s the string to compose on
    * @return a regex which matches any string that consists of the given string repeated any number of times.
@@ -398,6 +454,32 @@ public class Regex {
   }
 
   /**
+   * Returns a regex which matches any string that consists of the given string repeated any number of times.
+   * This uses the provide Evaluation method
+   * @param s the string to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given string repeated any number of times.
+   */
+  public static Regex anyAmount(String s, EvaluationType t) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "*", t.toRegex());
+    } else {
+      return new Regex("(?:", sanitized(s), ")*", t.toRegex());
+    }
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given regex repeated any number of times.
+   * This uses the provide Evaluation method
+   * @param r the regex to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given regex repeated any number of times.
+   */
+  public static Regex anyAmount(Regex r, EvaluationType t) {
+    return new Regex(r.selfAsGrouped(), "*", t.toRegex());
+  }
+
+  /**
    * Returns a regex which matches any string that consists of the given character repeated at least once.
    * @param c the character to compose on
    * @return a regex which matches any string that consists of the given character repeated at least once.
@@ -413,6 +495,27 @@ public class Regex {
    */
   public static Regex atLeastOne(Regex r) {
     return new Regex(r.selfAsGrouped(), "+");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated at least once.
+   * @param c the character to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given character repeated at least once.
+   */
+  public static Regex atLeastOne(char c, EvaluationType t) {
+    return new Regex(sanitized(c), "+", t.toRegex());
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * This uses the provide Evaluation method
+   * @param r the regex to compose on
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   */
+  public static Regex atLeastOne(Regex r, EvaluationType t) {
+    return new Regex(r.selfAsGrouped(), "+", t.toRegex());
   }
 
   /**
@@ -432,6 +535,73 @@ public class Regex {
               "(?:", sanitized(s), ")",
               "{", Integer.toString(min), ",",
               Integer.toString(max), "}");
+    }
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * @param g the regex to repeat
+   * @param min the minimum number of times the regex should repeat (inclusive)
+   * @param max the maximum number of times the regex should repeat (inclusive)
+   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   */
+  public static Regex repeat(Regex g, int min, int max) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(min), ",",
+            Integer.toString(max), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given string repeated between min and max times
+   * This uses the provide Evaluation method
+   * @param s the string to repeat
+   * @param min the minimum number of times the character should repeat (inclusive)
+   * @param max the maximum number of times the character should repeat (inclusive)
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given string repeated between min and max times
+   */
+  public static Regex repeat(String s, int min, int max, EvaluationType t) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}", t.toRegex());
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}", t.toRegex());
+    }
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * This uses the provide Evaluation method
+   * @param g the regex to repeat
+   * @param min the minimum number of times the regex should repeat (inclusive)
+   * @param max the maximum number of times the regex should repeat (inclusive)
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   */
+  public static Regex repeat(Regex g, int min, int max, EvaluationType t) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(min), ",",
+            Integer.toString(max), "}", t.toRegex());
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given string repeated exactly amount times
+   * @param s the string to repeat
+   * @param amount the number of times the regex should repeat
+   * @return a regex which matches any string that consists of the given string repeated exactly amount times
+   */
+  public static Regex repeatExactly(String s, int amount) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(amount), "}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(amount), "}");
     }
   }
 
@@ -475,6 +645,38 @@ public class Regex {
   }
 
   /**
+   * Returns a regex which matches any string that consists of the given string repeated at least min times
+   * This uses the provide Evaluation method
+   * @param s the string to repeat
+   * @param min the minimum number of times the character should repeat (inclusive)
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given string repeated at least min times
+   */
+  public static Regex repeatAtLeast(String s, int min, EvaluationType t) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(min), ",}", t.toRegex());
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(min), ",}", t.toRegex());
+    }
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * This uses the provide Evaluation method
+   * @param g the regex to repeat
+   * @param min the minimum number of times the regex should repeat (inclusive)
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   */
+  public static Regex repeatAtLeast(Regex g, int min, EvaluationType t) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(min), ",}", t.toRegex());
+  }
+
+  /**
    * Returns a regex which matches any string that consists of the given string repeated at most max times
    * @param s the string to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
@@ -503,33 +705,35 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated exactly amount times
+   * Returns a regex which matches any string that consists of the given string repeated at most max times
+   * This uses the provide Evaluation method
    * @param s the string to repeat
-   * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of the given string repeated exactly amount times
+   * @param max the maximum number of times the character should repeat (inclusive)
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of the given string repeated at most max times
    */
-  public static Regex repeatExactly(String s, int amount) {
+  public static Regex repeatAtMost(String s, int max, EvaluationType t) {
     if(s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)),
-              "{", Integer.toString(amount), "}");
+              "{0,", Integer.toString(max), "}", t.toRegex());
     } else {
       return new Regex(
               "(?:", sanitized(s), ")",
-              "{", Integer.toString(amount), "}");
+              "{0,", Integer.toString(max), "}", t.toRegex());
     }
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * This uses the provide Evaluation method
    * @param g the regex to repeat
-   * @param min the minimum number of times the regex should repeat (inclusive)
    * @param max the maximum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * @param t the evaluation type
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
    */
-  public static Regex repeat(Regex g, int min, int max) {
+  public static Regex repeatAtMost(Regex g, int max, EvaluationType t) {
     return new Regex(g.selfAsGrouped(),
-            "{", Integer.toString(min), ",",
-            Integer.toString(max), "}");
+            "{0,", Integer.toString(max), "}", t.toRegex());
   }
 
   /*
