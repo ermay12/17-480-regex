@@ -203,27 +203,6 @@ public class Regex {
   }
 
   /**
-   * Appends a regex's string to a builder, while also updating capturing group information.
-   * @param b
-   * @param regex
-   */
-  private void appendRegex(StringBuilder b, Regex regex) {
-    b.append(regex.rawRegex);
-    final int curGroupIndex = numGroups;
-    regex.groupToIndex.forEach((group, index) -> {
-      if (this.groupToIndex.containsKey(group)) {
-        // Remove label from capturing group
-        String toFind = "?<" + group.label + ">";
-        int startIndex = b.indexOf(toFind);
-        assert(startIndex != -1);
-        b.delete(startIndex, startIndex + toFind.length());
-      }
-      this.groupToIndex.put(group, index + curGroupIndex);
-    });
-    numGroups += regex.numGroups;
-  }
-
-  /**
    * Constructs a regular expression from the given sub-components. The
    * new Regex constructed will be the concatenation of all of the subcomponents.
    *
@@ -735,6 +714,27 @@ public class Regex {
    * Private Helpers *
    *******************
    */
+
+  /**
+   * Appends a regex's string to a builder, while also updating capturing group information.
+   * @param b the builder being used
+   * @param regex the regex, which may contain capturing groups
+   */
+  private void appendRegex(StringBuilder b, Regex regex) {
+    b.append(regex.rawRegex);
+    final int curGroupIndex = numGroups;
+    regex.groupToIndex.forEach((group, index) -> {
+      if (this.groupToIndex.containsKey(group)) {
+        // Remove label from capturing group
+        String toFind = "?<" + group.label + ">";
+        int startIndex = b.indexOf(toFind);
+        assert(startIndex != -1);
+        b.delete(startIndex, startIndex + toFind.length());
+      }
+      this.groupToIndex.put(group, index + curGroupIndex);
+    });
+    numGroups += regex.numGroups;
+  }
 
   /**
    * Returns a matcher on the given input
