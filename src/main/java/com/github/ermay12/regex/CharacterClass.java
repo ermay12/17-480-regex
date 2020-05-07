@@ -78,7 +78,7 @@ public class CharacterClass extends Regex {
     }
 
     @Override
-    protected String selfAsGrouped() {
+    String selfAsGrouped() {
         return getRawRegex();
     }
 

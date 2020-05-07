@@ -246,7 +246,7 @@ public class Regex {
    * Note that this method does not escape any characters
    * @param components the sub-components of the regular expression
    */
-  protected Regex(String... components) {
+  Regex(String... components) {
     StringBuilder b = new StringBuilder();
     for(String inner : components) {
       b.append(inner);
@@ -399,7 +399,7 @@ public class Regex {
    * @param c The character to sanitize
    * @return the given character as a string, escaped if necessary
    */
-  protected static String sanitized(char c) {
+  static String sanitized(char c) {
     StringBuilder b = new StringBuilder();
     switch(c) {
       case '?':
@@ -435,7 +435,7 @@ public class Regex {
    * @param s the string to sanitize
    * @return the given string, escaped if necessary
    */
-  protected static String sanitized(String s) {
+  static String sanitized(String s) {
     //TODO(astanesc): Use a regex or .contains?
     StringBuilder b = new StringBuilder();
     if(s.contains("\\E") || s.length() == 1) {
@@ -456,7 +456,7 @@ public class Regex {
    * The default implementation returns the regex within a non-capturing group
    * @return this regex as a group
    */
-  protected String selfAsGrouped() {
+  String selfAsGrouped() {
     StringBuilder r = new StringBuilder();
     r.append("(?:");
     r.append(rawRegex);
@@ -727,7 +727,7 @@ public class Regex {
     }
 
     @Override
-    protected String selfAsGrouped() {
+    String selfAsGrouped() {
       return getRawRegex();
     }
   }
