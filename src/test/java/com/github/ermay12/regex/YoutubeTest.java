@@ -21,9 +21,9 @@ public class YoutubeTest {
                         string("embed/"),
                         string("watch?")
                 ),
-                optional('?'),
-                optional('v'),
-                optional('='),
+                optional("?"),
+                optional("v"),
+                optional("="),
                 capture(anyAmount(
                         not(oneOf('#', '&', '?'))
                 )),
@@ -32,8 +32,5 @@ public class YoutubeTest {
 
         assertEquals("^.*(?:\\Qyoutu.be/\\E|\\Qv/\\E|\\Q/u/w/\\E|\\Qembed/\\E|\\Qwatch?\\E)\\??v?\\=?([^#&\\?]*).*",
                      regex.toString());
-
-        Pattern p = Pattern.compile("[[a-z]&&[b-d&&[d-e]]]");
-        System.out.println(p.matcher("c").matches());
     }
 }
