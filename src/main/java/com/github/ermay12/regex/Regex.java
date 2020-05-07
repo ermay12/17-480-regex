@@ -130,25 +130,14 @@ import java.util.stream.Stream;
  *  </tr>
  *
  *  <tr><th>&nbsp;</th></tr>
- *  <tr style="text-align: left"><th colspan="2" id="capture">Capturing Groups</th></tr>
- *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct capture"><i>capturing(X)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, but the match is now stored as a capturing group</td>
- *  </tr>
- *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct capture"><i>capturing(X, label)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">X, but the match is now stored as a named capturing group with name "label"</td>
- *  </tr>
- *
- *  <tr><th>&nbsp;</th></tr>
  *  <tr style="text-align: left"><th colspan="2" id="back">Back References</th></tr>
  *  <tr>
  *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(i)</i></td>
  *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the i'th capturing group matched</td>
  *  </tr>
  *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(label)</i></td>
- *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the capturing group with name "label" matched</td>
+ *    <td style="padding: 1px;" valign="top" headers="construct back"><i>backReference(group)</i></td>
+ *    <td style="padding: 1px; padding-left: 5px;" headers="matches">What the capturing group passed in matched</td>
  *  </tr>
  *
  *  <tr><th>&nbsp;</th></tr>
@@ -171,71 +160,6 @@ import java.util.stream.Stream;
  *  </tr>
  *  </tbody>
  * </table>
- *
- * <h4>Character Classes</h4>
- * More on character classes can be found in the description for the {@link CharacterClass} class.
- *
- * <h4>Groups and Capturing</h4>
- * <h5>Group Number</h5>
- * <p> Capturing groups are numbered by counting their opening parentheses from
- *  left to right.  In the expression </p>
- *  <pre>
-        capturing(
-           concatenate(
-              capturing(string("A")),
-              capturing(
-                concatenate(string("B"),
-                            capturing(string("C"))
-                            )
-              )
-        )
- </pre>
- * <p> there are four such groups: </p>
- *
- *  <blockquote><table><caption>Capturing group numberings</caption>
- *  <tbody><tr><th>1&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>The whole group</td></tr>
- *  <tr><th>2&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(string("A"))</td></tr>
- *  <tr><th>3&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(concatenate(string("B"), capturing(string("C"))))
- *  <tr><th>4&nbsp;&nbsp;&nbsp;&nbsp;</th>
- *      <td>capturing(string("C"))</td></tr>
- *  </tbody></table></blockquote>
- *  <p> Group zero always stands for the entire expression.
- *  </p>
- *  <p>Capturing groups are so named because, during a match, each subsequence
- *  of the input sequence that matches such a group is saved.  The captured
- *  subsequence may be used later in the expression, via a back reference, and
- *  may also be retrieved from the matcher once the match operation is complete.
- *  </p>
- *
- *  <h5>Group Name</h5>
- *  <p>A capturing group can also be assigned a "name", a named capturing group,
- *  and then be back-referenced later by the "name". Group names are composed of
- *  the following characters. The first character must be a letter.
- *
- *  </p><ul>
- *    <li> The uppercase letters 'A' through 'Z'
- *         ('\u0041'&nbsp;through&nbsp;'\u005a'),
- *    </li><li> The lowercase letters 'a' through 'z'
- *         ('\u0061'&nbsp;through&nbsp;'\u007a'),
- *    </li><li> The digits '0' through '9'
- *         ('\u0030'&nbsp;through&nbsp;'\u0039'),
- *  </li></ul>
- *
- *  <p>A named-capturing group is still numbered as described in
- *  Group number.
- *  </p>
- *
- *  <p> The captured input associated with a group is always the subsequence
- *  that the group most recently matched.  If a group is evaluated a second time
- *  because of quantification then its previously-captured value, if any, will
- *  be retained if the second evaluation fails.  Matching the string
- *  "aba" against the expression atLeastOne(concatenate(string("a"), capture(optional(string("b")))),
- *  for example, leaves the group set to "b".  All captured input is discarded at the
- *  beginning of each match.
- *  </p>
  */
 public class Regex {
   private Pattern pattern;
