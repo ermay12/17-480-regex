@@ -49,7 +49,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *  <p>There are some methods which can refer to CapturingGroups via this index, however passing in a reference
  *  to the group itself should almost always be preferred to those methods.</p>
  */
-public final class CapturingGroup extends Regex {
+public final class CapturingGroup extends RegularExpression {
 
     private static final String LABEL_BASE = "label";
     private static final AtomicLong NEXT_LABEL_ID = new AtomicLong();
@@ -61,10 +61,10 @@ public final class CapturingGroup extends Regex {
      * @param components The regexes to capture
      * @return a capturing group matching the same thing that the original regexes match
      */
-    public static CapturingGroup capture(Regex... components) {
-        return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), new Regex(components));
+    public static CapturingGroup capture(RegularExpression... components) {
+        return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), new RegularExpression(components));
     }
-    private CapturingGroup(String label, Regex r) {
+    private CapturingGroup(String label, RegularExpression r) {
         super("(?<", label, ">", r.getRawRegex(), ")");
 
         // Add our group, shifting all other indexes by 1

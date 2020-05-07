@@ -8,23 +8,23 @@ import static com.github.ermay12.regex.CapturingGroup.*;
 import static org.junit.Assert.assertEquals;
 
 public class PhoneNumberTest {
-    @Test
-    public void testPhoneNumber() {
-        Regex separator =
-                optional(
-                        oneOf(
-                                string("-"),
-                                string("("),
-                                string(")"),
-                                WHITESPACE
-                        )
-                );
+  @Test
+  public void testPhoneNumber() {
+    RegularExpression separator =
+        optional(
+            oneOf(
+                string("-"),
+                string("("),
+                string(")"),
+                WHITESPACE
+            )
+        );
 
-        Regex phoneNumber = separator;
-        for (int i = 0; i < 10; i++) {
-            phoneNumber = new Regex(phoneNumber,
-                                    capture(DIGIT),
-                                    separator);
-        }
+    RegularExpression phoneNumber = separator;
+    for (int i = 0; i < 10; i++) {
+      phoneNumber = concatenate(phoneNumber,
+          capture(DIGIT),
+          separator);
     }
+  }
 }

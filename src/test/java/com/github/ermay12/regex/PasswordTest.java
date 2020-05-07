@@ -4,19 +4,18 @@ import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
-import static org.junit.Assert.assertEquals;
 
 public class PasswordTest {
-    @Test
-    public void testPassword() {
-        Regex regex = new Regex(
-                LINE_START,
-                lookahead(new Regex(anyAmount(WILDCARD), single(range('a', 'z')))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(range('A', 'Z')))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(DIGIT))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(not(WORD_CHARACTER)))),
-                repeatAtLeast(WILDCARD, 8),
-                LINE_END
-        );
-    }
+  @Test
+  public void testPassword() {
+    RegularExpression regex = concatenate(
+        LINE_START,
+        lookahead(concatenate(anyAmount(WILDCARD), single(range('a', 'z')))),
+        lookahead(concatenate(anyAmount(WILDCARD), single(range('A', 'Z')))),
+        lookahead(concatenate(anyAmount(WILDCARD), single(DIGIT))),
+        lookahead(concatenate(anyAmount(WILDCARD), single(not(WORD_CHARACTER)))),
+        repeatAtLeast(WILDCARD, 8),
+        LINE_END
+    );
+  }
 }
