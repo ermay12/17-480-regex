@@ -6,6 +6,7 @@ package com.github.ermay12.regex;
 import com.google.common.collect.Streams;
 import org.junit.Test;
 
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
