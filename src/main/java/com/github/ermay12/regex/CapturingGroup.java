@@ -15,15 +15,16 @@ public final class CapturingGroup extends Regex {
      * @param r The regex to capture
      * @return a capturing group matching the same thing that the original regex matches
      */
-    public static CapturingGroup capture(Regex r) {
-        return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), r);
+    public static CapturingGroup capture(Regex... r) {
+        return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), new Regex(r));
     }
     private CapturingGroup(String label, Regex r) {
         super("(?<", label, ">", r.getRawRegex(), ")");
 
-        // We are the only group
+        // Add our group, shifting all other indexes by 1
+        this.groupToIndex.replaceAll((group, index) -> index + 1);
         this.groupToIndex.put(this, 1);
-        this.numGroups = 1;
+        this.numGroups += 1;
         this.label = label;
     }
 
