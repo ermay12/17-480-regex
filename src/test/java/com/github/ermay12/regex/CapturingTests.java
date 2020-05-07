@@ -11,12 +11,16 @@ public class CapturingTests {
     @Test
     public void simpleCapture() {
         CapturingGroup cap = capture(concatenate(DIGIT, DIGIT, DIGIT));
+        CapturingGroup badcap = capture(concatenate(DIGIT, DIGIT, DIGIT));
         Regex captureFun = concatenate(string("hi"), cap, string("foobar"));
 
         assertTrue(captureFun.doesMatch("hi123foobar"));
         assertEquals("hi123foobar", captureFun.firstMatch("hi123foobar").getGroup(0));
         assertEquals("123", captureFun.firstMatch("hi123foobar").getGroup(1));
         assertEquals("123", captureFun.firstMatch("hi123foobar").getGroup(cap));
+        assertThrows(IllegalArgumentException.class, () -> {
+            captureFun.firstMatch("hi123foobar").getGroup(badcap);
+        });
 
         CapturingGroup cap2 = capture(anyAmount(DIGIT));
         Regex anyAmount = concatenate(string("hi"), cap2, string("foobar"));
@@ -66,9 +70,9 @@ public class CapturingTests {
         CapturingGroup capInner1 = capture(anyAmount(DIGIT));
         CapturingGroup capInner2 = capture(oneOf("a", "b", "c"));
         CapturingGroup capInner3 = capture(anyAmount(DIGIT));
-        CapturingGroup capMiddle1 = capture(concatenate(capInner1, anyAmount(WHITESPACE), capInner2));
-        CapturingGroup capMiddle2 = capture(concatenate(capInner3, anyAmount(range('a', 'z'))));
-        CapturingGroup capOuter = capture(concatenate(capMiddle1, string("-"), capMiddle2));
+        CapturingGroup capMiddle1 = capture(capInner1, anyAmount(WHITESPACE), capInner2);
+        CapturingGroup capMiddle2 = capture(capInner3, anyAmount(range('a', 'z')));
+        CapturingGroup capOuter = capture(capMiddle1, string("-"), capMiddle2);
 
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
@@ -102,9 +106,9 @@ public class CapturingTests {
 
         CapturingGroup capInner1 = capture(anyAmount(DIGIT));
         CapturingGroup capInner2 = capture(oneOf("a", "b", "c"));
-        CapturingGroup capMiddle1 = capture(concatenate(capInner1, anyAmount(WHITESPACE), capInner2));
-        CapturingGroup capMiddle2 = capture(concatenate(capInner1, anyAmount(range('a', 'z'))));
-        CapturingGroup capOuter = capture(concatenate(capMiddle1, string("-"), capMiddle2));
+        CapturingGroup capMiddle1 = capture(capInner1, anyAmount(WHITESPACE), capInner2);
+        CapturingGroup capMiddle2 = capture(capInner1, anyAmount(range('a', 'z')));
+        CapturingGroup capOuter = capture(capMiddle1, string("-"), capMiddle2);
 
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
@@ -121,5 +125,89 @@ public class CapturingTests {
         assertEquals("a", m.getGroup(capInner2));
         assertEquals("41abba", m.getGroup(capMiddle2));
         assertEquals("41", m.getGroup(capInner1));
+    }
+
+    @Test
+    public void simpleBackReference() {
+        CapturingGroup cap = capture(DIGIT, DIGIT, DIGIT);
+        Regex captureFun = concatenate(string("hi"), cap, string("foobar"), backReference(cap));
+
+        assertTrue(captureFun.doesMatch("hi123foobar123"));
+        assertTrue(captureFun.doesMatch("hi154foobar154"));
+        assertFalse(captureFun.doesMatch("hi512foobar123"));
+
+        Regex captureFun2 = concatenate(string("hi"), cap, string("foobar"), backReference(1));
+
+        assertTrue(captureFun2.doesMatch("hi123foobar123"));
+        assertTrue(captureFun2.doesMatch("hi154foobar154"));
+        assertFalse(captureFun2.doesMatch("hi512foobar123"));
+
+        CapturingGroup cap3 = capture(DIGIT);
+        Regex lastOnly = concatenate(string("hi"), anyAmount(cap3), string("foobar"), backReference(cap3));
+
+        assertTrue(lastOnly.doesMatch("hi123foobar3"));
+        assertFalse(lastOnly.doesMatch("hi123foobar1"));
+        assertFalse(lastOnly.doesMatch("hi123foobar2"));
+
+        CapturingGroup cap4 = capture(DIGIT);
+        Regex many = concatenate(string("hi"), anyAmount(cap4), string("foobar"), backReference(cap4), backReference(cap4), backReference(cap4));
+
+        assertTrue(many.doesMatch("hi123foobar333"));
+        assertFalse(many.doesMatch("hi123foobar133"));
+        assertFalse(many.doesMatch("hi123foobar233"));
+    }
+
+    @Test
+    public void recursiveBackreferences() {
+        CapturingGroup capInner1 = capture(anyAmount(DIGIT));
+        CapturingGroup capInner2 = capture(oneOf("a", "b", "c"));
+        CapturingGroup capInner3 = capture(anyAmount(DIGIT));
+        CapturingGroup capMiddle1 = capture(capInner1, anyAmount(WHITESPACE), capInner2);
+        CapturingGroup capMiddle2 = capture(capInner3, anyAmount(range('a', 'z')));
+        CapturingGroup capOuter = capture(capMiddle1, string("-"),  backReference(capInner1), string("-"), capMiddle2, backReference(capInner3));
+
+        Regex r = concatenate(LINE_START, capOuter, LINE_END);
+        assertFalse(r.doesMatch("123 a-41abba"));
+        assertTrue(r.doesMatch("123 a-123-41abba41"));
+        assertFalse(r.doesMatch("13 a-123-41abba41"));
+        assertFalse(r.doesMatch("123 a-123-41abba4"));
+        assertTrue(r.doesMatch("41 a-41-123abba123"));
+    }
+
+    @Test
+    public void reuseBackreferences() {
+        CapturingGroup capInner1 = capture(anyAmount(DIGIT));
+        CapturingGroup capInner2 = capture(oneOf("a", "b", "c"));
+        CapturingGroup capMiddle1 = capture(capInner1, anyAmount(WHITESPACE), capInner2);
+        CapturingGroup capMiddle2 = capture(capInner1, anyAmount(range('a', 'z')));
+        CapturingGroup capOuter = capture(capMiddle1, string("-"), capMiddle2);
+
+        Regex r = concatenate(LINE_START, capOuter, LINE_END);
+        assertTrue(r.doesMatch("123 a-41abba"));
+        RegexMatch m = r.firstMatch("123 a-41abba");
+        assertEquals("123 a-41abba", m.getGroup(0));
+        assertEquals("123 a-41abba", m.getGroup(1));
+        assertEquals("123 a", m.getGroup(2));
+        assertEquals("a", m.getGroup(3));
+        assertEquals("41abba", m.getGroup(4));
+        assertEquals("41", m.getGroup(5));
+
+        assertEquals("123 a-41abba", m.getGroup(capOuter));
+        assertEquals("123 a", m.getGroup(capMiddle1));
+        assertEquals("a", m.getGroup(capInner2));
+        assertEquals("41abba", m.getGroup(capMiddle2));
+        assertEquals("41", m.getGroup(capInner1));
+    }
+
+    @Test
+    public void illegalBackreferences() {
+        CapturingGroup cap1 = capture(repeat(DIGIT, 2, 4));
+        CapturingGroup cap2 = capture(anyAmount(DIGIT));
+
+        Regex p1 = concatenate(cap1, backReference(cap1));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            Regex illegal = concatenate(p1, cap1);
+        });
     }
 }

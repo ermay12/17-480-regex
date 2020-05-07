@@ -739,7 +739,7 @@ public class Regex {
    * @return a regex that matches the same thing that the last instance of group matched.
    */
   public static Regex backReference(CapturingGroup group) {
-    return new Regex("\\k", group.label);
+    return new Regex("\\k<", group.label, ">");
   }
 
   /*
@@ -918,17 +918,22 @@ public class Regex {
    * @param regex the regex, which may contain capturing groups
    */
   private void appendRegex(StringBuilder b, Regex regex) {
-    b.append(regex.rawRegex);
     ArrayList<Integer> removedValues = new ArrayList<>();
     regex.groupToIndex.forEach((group, index) -> {
       if (this.groupToIndex.containsKey(group)) {
         // Turn capturing group into non-capturing group
-        String toFind = "<" + group.label + ">";
+        String toFind = "?<" + group.label + ">";
         int startIndex = b.indexOf(toFind);
         assert(startIndex != -1);
 
-        b.replace(startIndex, startIndex+1, ":");
-        b.delete(startIndex+1, startIndex + toFind.length());
+        b.replace(startIndex+1, startIndex+2, ":");
+        b.delete(startIndex+2, startIndex + toFind.length());
+
+        String badbackreference = "\\k<" + group.label + ">";
+        if(b.indexOf(badbackreference) != -1) {
+          throw new IllegalArgumentException("Backreference made to group " + group.toString() +
+                                             " that becomes illegal due to concatenation!");
+        }
 
         removedValues.add(index);
         numGroups--;
@@ -955,6 +960,8 @@ public class Regex {
       this.groupToIndex.put(group, index + curGroupIndex);
       numGroups++;
     });
+
+    b.append(regex.rawRegex);
   }
 
   /**
