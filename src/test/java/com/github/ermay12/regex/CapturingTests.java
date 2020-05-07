@@ -101,7 +101,9 @@ public class CapturingTests {
         assertTrue(r1.doesMatch("123"));
         RegexMatch m1 = r1.firstMatch("123 a-41abba");
         assertEquals("123", m1.getGroup(0));
-        assertEquals("3", m1.getGroup(1));
+        assertEquals("1", m1.getGroup(1));
+        assertEquals("2", m1.getGroup(2));
+        assertEquals("3", m1.getGroup(3));
         assertEquals("3", m1.getGroup(c1));
 
         CapturingGroup capInner1 = capture(anyAmount(DIGIT));
@@ -116,9 +118,10 @@ public class CapturingTests {
         assertEquals("123 a-41abba", m.getGroup(0));
         assertEquals("123 a-41abba", m.getGroup(1));
         assertEquals("123 a", m.getGroup(2));
-        assertEquals("a", m.getGroup(3));
-        assertEquals("41abba", m.getGroup(4));
-        assertEquals("41", m.getGroup(5));
+        assertEquals("123", m.getGroup(3));
+        assertEquals("a", m.getGroup(4));
+        assertEquals("41abba", m.getGroup(5));
+        assertEquals("41", m.getGroup(6));
 
         assertEquals("123 a-41abba", m.getGroup(capOuter));
         assertEquals("123 a", m.getGroup(capMiddle1));
@@ -188,9 +191,10 @@ public class CapturingTests {
         assertEquals("123 a-41abba", m.getGroup(0));
         assertEquals("123 a-41abba", m.getGroup(1));
         assertEquals("123 a", m.getGroup(2));
-        assertEquals("a", m.getGroup(3));
-        assertEquals("41abba", m.getGroup(4));
-        assertEquals("41", m.getGroup(5));
+        assertEquals("123", m.getGroup(3));
+        assertEquals("a", m.getGroup(4));
+        assertEquals("41abba", m.getGroup(5));
+        assertEquals("41", m.getGroup(6));
 
         assertEquals("123 a-41abba", m.getGroup(capOuter));
         assertEquals("123 a", m.getGroup(capMiddle1));

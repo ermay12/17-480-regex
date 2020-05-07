@@ -919,48 +919,26 @@ public class Regex {
    */
   private void appendRegex(StringBuilder b, Regex regex) {
     ArrayList<Integer> removedValues = new ArrayList<>();
+    final int curGroupIndex = numGroups;
     regex.groupToIndex.forEach((group, index) -> {
       if (this.groupToIndex.containsKey(group)) {
-        // Turn capturing group into non-capturing group
+        // Remove label from capturing group
         String toFind = "?<" + group.label + ">";
         int startIndex = b.indexOf(toFind);
         assert(startIndex != -1);
 
-        b.replace(startIndex+1, startIndex+2, ":");
-        b.delete(startIndex+2, startIndex + toFind.length());
+        b.delete(startIndex, startIndex + toFind.length());
 
-        String badbackreference = "\\k<" + group.label + ">";
-        if(b.indexOf(badbackreference) != -1) {
+        String badBackReference = "\\k<" + group.label + ">";
+        if(b.indexOf(badBackReference) != -1) {
           throw new IllegalArgumentException("Backreference made to group " + group.toString() +
                                              " that becomes illegal due to concatenation!");
         }
-
-        removedValues.add(index);
-        numGroups--;
       }
-    });
-
-    if(!removedValues.isEmpty()) {
-      removedValues.sort(Comparator.naturalOrder());
-
-      this.groupToIndex.replaceAll((cg, index) -> {
-        //TODO: binsearch?
-        int offset = 0;
-        while (offset < removedValues.size()
-                && index < removedValues.get(offset)) {
-          offset++;
-        }
-        index -= removedValues.size() - offset;
-        return index;
-      });
-    }
-
-    final int curGroupIndex = numGroups;
-    regex.groupToIndex.forEach((group, index) -> {
       this.groupToIndex.put(group, index + curGroupIndex);
-      numGroups++;
     });
 
+    numGroups += regex.numGroups;
     b.append(regex.rawRegex);
   }
 
