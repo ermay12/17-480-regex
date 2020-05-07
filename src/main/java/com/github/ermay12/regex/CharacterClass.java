@@ -1,5 +1,7 @@
 package com.github.ermay12.regex;
 
+import static com.github.ermay12.regex.Regex.sanitized;
+
 /**
  * <p>This class represents a compiled character class. Instances of this class are immutable and
  * safe to be used by multiple concurrent threads.</p>
@@ -72,7 +74,7 @@ package com.github.ermay12.regex;
  *  </tbody>
  *  </table>
  */
-public class CharacterClass extends Regex {
+public class CharacterClass extends RegularExpression {
     /**
      * Creates a new character class from the given components
      * @param components the components to create the character class from
