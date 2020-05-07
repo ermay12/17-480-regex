@@ -188,6 +188,41 @@ public class Regex {
     pattern = null;
   }
 
+
+  /**
+   * Constructs a Regular Expression from the regular expression subcomponents.
+   * Takes group indexing regex from a base regex.
+   * Note that this method does not escape any characters
+   * @param base the regex to copy group indexing info from
+   * @param components the sub-components of the regular expression
+   */
+  Regex(Regex base, String... components) {
+    this(components);
+    this.numGroups = base.numGroups;
+    this.groupToIndex = base.groupToIndex;
+  }
+
+  /**
+   * Appends a regex's string to a builder, while also updating capturing group information.
+   * @param b
+   * @param regex
+   */
+  private void appendRegex(StringBuilder b, Regex regex) {
+    b.append(regex.rawRegex);
+    final int curGroupIndex = numGroups;
+    regex.groupToIndex.forEach((group, index) -> {
+      if (this.groupToIndex.containsKey(group)) {
+        // Remove label from capturing group
+        String toFind = "?<" + group.label + ">";
+        int startIndex = b.indexOf(toFind);
+        assert(startIndex != -1);
+        b.delete(startIndex, startIndex + toFind.length());
+      }
+      this.groupToIndex.put(group, index + curGroupIndex);
+    });
+    numGroups += regex.numGroups;
+  }
+
   /**
    * Constructs a regular expression from the given sub-components. The
    * new Regex constructed will be the concatenation of all of the subcomponents.
@@ -200,19 +235,7 @@ public class Regex {
     StringBuilder b = new StringBuilder();
     numGroups = 0;
     for(Regex inner : components) {
-      b.append(inner.rawRegex);
-      final int curGroupIndex = numGroups;
-      inner.groupToIndex.forEach((group, index) -> {
-        if (this.groupToIndex.containsKey(group)) {
-          // Remove label from capturing group
-          String toFind = "?<" + group.label + ">";
-          int startIndex = b.indexOf(toFind);
-          assert(startIndex != -1);
-          b.delete(startIndex, startIndex + toFind.length());
-        }
-        this.groupToIndex.put(group, index + curGroupIndex);
-      });
-      numGroups += inner.numGroups;
+      appendRegex(b, inner);
     }
     rawRegex = b.toString();
     pattern = null;
@@ -311,7 +334,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
    */
   public static Regex optional(Regex r) {
-    return new Regex(r.selfAsGrouped(), "?");
+    return new Regex(r, r.selfAsGrouped(), "?");
   }
 
   /**
@@ -333,7 +356,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given regex repeated any number of times.
    */
   public static Regex anyAmount(Regex r) {
-    return new Regex(r.selfAsGrouped(), "*");
+    return new Regex(r, r.selfAsGrouped(), "*");
   }
 
   /**
@@ -351,7 +374,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
    */
   public static Regex atLeastOne(Regex r) {
-    return new Regex(r.selfAsGrouped(), "+");
+    return new Regex(r, r.selfAsGrouped(), "+");
   }
 
   /**
@@ -381,7 +404,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
    */
   public static Regex repeatExactly(Regex g, int amount) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(amount), "}");
   }
 
@@ -409,7 +432,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
    */
   public static Regex repeatAtLeast(Regex g, int min) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(min), ",}");
   }
 
@@ -437,7 +460,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
    */
   public static Regex repeatAtMost(Regex g, int max) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{0,", Integer.toString(max), "}");
   }
 
@@ -466,7 +489,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
    */
   public static Regex repeat(Regex g, int min, int max) {
-    return new Regex(g.selfAsGrouped(),
+    return new Regex(g, g.selfAsGrouped(),
             "{", Integer.toString(min), ",",
             Integer.toString(max), "}");
   }
@@ -486,7 +509,7 @@ public class Regex {
    * @param components the sub-components of the regular expression
    * @return a new regular expression matching the concatenation of the arguments
    */
-  public Regex concatenate(Regex... components) {
+  public static Regex concatenate(Regex... components) {
     return new Regex(components);
   }
 
@@ -498,15 +521,17 @@ public class Regex {
    */
   public static Regex oneOf(Regex... rs) {
     if(rs.length > 1) {
-      StringBuilder regex = new StringBuilder();
-      regex.append("(?:");
-      regex.append(rs[0].rawRegex);
+      Regex regex = new Regex("");
+      StringBuilder b = new StringBuilder();
+      b.append("(?:");
+      regex.appendRegex(b, rs[0]);
       for (int i = 1; i < rs.length; i++) {
-        regex.append("|");
-        regex.append(rs[i].rawRegex);
+        b.append("|");
+        regex.appendRegex(b, rs[i]);
       }
-      regex.append(")");
-      return new Regex(regex.toString());
+      b.append(")");
+      regex.rawRegex = b.toString();
+      return regex;
     } else if (rs.length == 1) {
       return rs[0];
     } else {
@@ -557,7 +582,7 @@ public class Regex {
    * @return a new regex that asserts that the rest of the string matches r, but does not consume any characters
    */
   public static Regex lookahead(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?=",
             r.rawRegex,
             ")"
@@ -574,7 +599,7 @@ public class Regex {
    * @return a new regex that asserts that the rest of the string does not match r, but does not consume any characters
    */
   public static Regex negativeLookahead(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?!",
             r.rawRegex,
             ")"
@@ -592,7 +617,7 @@ public class Regex {
    * @return a new regex that asserts that the preceding part of the string matches r, but does not consume any characters
    */
   public static Regex lookbehind(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?<=",
             r.rawRegex,
             ")"
@@ -610,7 +635,7 @@ public class Regex {
    * @return a new regex that asserts that the preceding part of the string does not match r, but does not consume any characters
    */
   public static Regex negativeLookbehind(Regex r) {
-    return new Regex(
+    return new Regex(r,
             "(?<!",
             r.rawRegex,
             ")"
