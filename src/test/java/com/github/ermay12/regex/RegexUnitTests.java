@@ -1,6 +1,7 @@
 package com.github.ermay12.regex;
 
 import static com.github.ermay12.regex.Regex.*;
+import static com.github.ermay12.regex.CapturingGroup.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.*;
 
@@ -38,12 +39,12 @@ public class RegexUnitTests {
         assertFalse(testStart.doesMatch("b"));
         assertFalse(testStart.doesMatch("baba"));
 
-
         Regex testEnd = concatenate(single('a'), LINE_END);
 
         assertTrue(testEnd.doesMatch("a"));
         assertFalse(testEnd.doesMatch("b"));
         assertTrue(testEnd.doesMatch("baba"));
+        assertEquals("a", testEnd.firstMatch("baba").getMatchString());
     }
 
     @Test
@@ -53,6 +54,7 @@ public class RegexUnitTests {
         assertFalse(testRegex.doesMatch("a"));
         assertFalse(testRegex.doesMatch("b"));
         assertTrue(testRegex.doesMatch("ab"));
+        assertEquals("ab", testRegex.firstMatch("ab").getMatchString());
     }
 
     @Test
@@ -106,6 +108,18 @@ public class RegexUnitTests {
     }
 
     @Test
+    public void testOptionalAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(optional("ab", EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("abab"));
+        assertEquals("", testLazy.firstMatch("abab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(optional("ab", EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertTrue(testPossessive.doesMatch("abab"));
+        assertFalse(testPossessive.doesMatch("ab"));
+    }
+
+    @Test
     public void testAnyAmount() {
         Regex testRegex = concatenate(LINE_START, anyAmount("ab"), LINE_END);
 
@@ -135,6 +149,18 @@ public class RegexUnitTests {
     }
 
     @Test
+    public void testAnyAmountAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(anyAmount("ab", EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("ababab"));
+        assertEquals("", testLazy.firstMatch("ababab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(anyAmount("ab", EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertFalse(testPossessive.doesMatch("ababab"));
+        assertFalse(testPossessive.doesMatch("ab"));
+    }
+
+    @Test
     public void testAtLeastOne() {
         Regex testRegex = concatenate(LINE_START, atLeastOne("ab"), LINE_END);
 
@@ -161,6 +187,18 @@ public class RegexUnitTests {
         assertTrue(testNested.doesMatch("cabbaa"));
         assertTrue(testNested.doesMatch("bababababac"));
         assertFalse(testNested.doesMatch("dbababababac"));
+    }
+
+    @Test
+    public void testAtLeastOneAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(atLeastOne("ab", EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("ababab"));
+        assertEquals("ab", testLazy.firstMatch("ababab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(atLeastOne("ab", EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertFalse(testPossessive.doesMatch("abababab"));
+        assertFalse(testPossessive.doesMatch("abab"));
     }
 
     @Test
@@ -196,6 +234,19 @@ public class RegexUnitTests {
         assertFalse(testNested.doesMatch("cabbaa"));
         assertFalse(testNested.doesMatch("bababababac"));
         assertFalse(testNested.doesMatch("dbababababac"));
+    }
+
+    @Test
+    public void testRepeatAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(repeat("ab", 1, 3, EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("abababab"));
+        assertEquals("ab", testLazy.firstMatch("abababab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(repeat("ab", 1, 3, EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertTrue(testPossessive.doesMatch("abababab"));
+        assertEquals("ababab", testPossessive.firstMatch("abababab").getGroup(1));
+        assertFalse(testPossessive.doesMatch("abab"));
     }
 
     @Test
@@ -273,6 +324,18 @@ public class RegexUnitTests {
     }
 
     @Test
+    public void testRepeatAtLeastAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(repeatAtLeast("ab", 1, EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("abababab"));
+        assertEquals("ab", testLazy.firstMatch("abababab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(repeatAtLeast("ab", 1, EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertFalse(testPossessive.doesMatch("abababab"));
+        assertFalse(testPossessive.doesMatch("abab"));
+    }
+
+    @Test
     public void testRepeatAtMost() {
         Regex testRegex = concatenate(LINE_START, repeatAtMost("ab", 2), LINE_END);
 
@@ -307,6 +370,19 @@ public class RegexUnitTests {
         assertFalse(testNested.doesMatch("cabbaa"));
         assertFalse(testNested.doesMatch("bababababac"));
         assertFalse(testNested.doesMatch("dbababababac"));
+    }
+
+    @Test
+    public void testRepeatAtMostAlternateModes() {
+        Regex testLazy = concatenate(LINE_START, capture(repeatAtMost("ab", 3, EvaluationMethod.LAZILY)), atLeastOne("ab"));
+
+        assertTrue(testLazy.doesMatch("abababab"));
+        assertEquals("", testLazy.firstMatch("abababab").getGroup(1));
+
+        Regex testPossessive = concatenate(LINE_START, capture(repeatAtMost("ab", 3, EvaluationMethod.POSSESSIVELY)), atLeastOne("ab"));
+        assertTrue(testPossessive.doesMatch("abababab"));
+        assertEquals("ababab", testPossessive.firstMatch("abababab").getGroup(1));
+        assertFalse(testPossessive.doesMatch("abab"));
     }
 
     @Test

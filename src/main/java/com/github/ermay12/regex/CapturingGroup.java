@@ -62,10 +62,15 @@ public final class CapturingGroup extends Regex {
      * @return a capturing group matching the same thing that the original regexes match
      */
     public static CapturingGroup capture(Regex... components) {
-        return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), new Regex(components));
+        if(components.length > 1) {
+            return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), new Regex(components));
+        } else {
+            return new CapturingGroup(LABEL_BASE + NEXT_LABEL_ID.incrementAndGet(), components[0]);
+        }
     }
+
     private CapturingGroup(String label, Regex r) {
-        super("(?<", label, ">", r.getRawRegex(), ")");
+        super(r, "(?<", label, ">", r.getRawRegex(), ")");
 
         // Add our group, shifting all other indexes by 1
         this.groupToIndex.replaceAll((group, index) -> index + 1);
