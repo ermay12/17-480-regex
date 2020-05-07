@@ -139,8 +139,12 @@ public class Regex {
     );
   }
 
-  public static Regex anyAmount(char c) {
-    return new Regex(sanitized(c), "*");
+  public static Regex anyAmount(String s) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "*");
+    } else {
+      return new Regex("(?:", sanitized(s), ")*");
+    }
   }
 
   public static Regex anyAmount(Regex s) {
@@ -165,18 +169,29 @@ public class Regex {
     return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
   }
 
-  public static Regex optional(char c) {
-    return new Regex(sanitized(c), "?");
+  public static Regex optional(String s) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "?");
+    } else {
+      return new Regex("(?:", sanitized(s), ")?");
+    }
   }
 
   public static Regex optional(Regex s) {
     return new Regex(s.selfAsGrouped(), "?");
   }
 
-  public static Regex repeat(char c, int min, int max) {
-    return new Regex(sanitized(c),
-                      "{", Integer.toString(min), ",",
-                      Integer.toString(max), "}");
+  public static Regex repeat(String s, int min, int max) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)),
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}");
+    } else {
+      return new Regex(
+              "(?:", sanitized(s), ")",
+              "{", Integer.toString(min), ",",
+              Integer.toString(max), "}");
+    }
   }
 
   public static Regex repeat(Regex g, int min, int max) {
