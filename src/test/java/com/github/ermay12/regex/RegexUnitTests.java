@@ -273,6 +273,43 @@ public class RegexUnitTests {
     }
 
     @Test
+    public void testRepeatAtMost() {
+        Regex testRegex = concatenate(LINE_START, repeatAtMost("ab", 2), LINE_END);
+
+        assertTrue(testRegex.doesMatch(""));
+        assertTrue(testRegex.doesMatch("ab"));
+        assertTrue(testRegex.doesMatch("abab"));
+        assertFalse(testRegex.doesMatch("ababab"));
+        assertFalse(testRegex.doesMatch("abababab"));
+        assertFalse(testRegex.doesMatch("baba"));
+        assertFalse(testRegex.doesMatch("ababababab"));
+
+        Regex testOneChar = concatenate(LINE_START, repeatAtMost("a", 2), LINE_END);
+
+        assertTrue(testOneChar.doesMatch("a"));
+        assertTrue(testOneChar.doesMatch("aa"));
+        assertFalse(testOneChar.doesMatch("aaaa"));
+        assertFalse(testOneChar.doesMatch("aaaaa"));
+        assertFalse(testOneChar.doesMatch("baaaaa"));
+
+        Regex testNested = concatenate(LINE_START, repeatAtMost(oneOf("a", "b", "c"), 2), LINE_END);
+
+        assertTrue(testNested.doesMatch(""));
+        assertTrue(testNested.doesMatch("a"));
+        assertTrue(testNested.doesMatch("b"));
+        assertTrue(testNested.doesMatch("c"));
+        assertTrue(testNested.doesMatch("ba"));
+        assertTrue(testNested.doesMatch("cb"));
+        assertTrue(testNested.doesMatch("ac"));
+        assertFalse(testNested.doesMatch("cab"));
+        assertFalse(testNested.doesMatch("baba"));
+        assertFalse(testNested.doesMatch("bacb"));
+        assertFalse(testNested.doesMatch("cabbaa"));
+        assertFalse(testNested.doesMatch("bababababac"));
+        assertFalse(testNested.doesMatch("dbababababac"));
+    }
+
+    @Test
     public void testLookahead() {
         Regex testRegex = concatenate(lookahead(single('a')), lookahead(single(WORD_CHARACTER)));
 
