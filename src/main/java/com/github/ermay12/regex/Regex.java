@@ -389,11 +389,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given string repeated at most once
    */
   public static Regex optional(String s) {
-    if(s.length() == 1) {
-      return new Regex(sanitized(s.charAt(0)), "?");
-    } else {
-      return new Regex("(?:", sanitized(s), ")?");
-    }
+    return optional(s, EvaluationType.GREEDILY);
   }
 
   /**
@@ -402,7 +398,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
    */
   public static Regex optional(Regex r) {
-    return new Regex(r.selfAsGrouped(), "?");
+    return optional(r, EvaluationType.GREEDILY);
   }
 
   /**
@@ -437,11 +433,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given string repeated any number of times.
    */
   public static Regex anyAmount(String s) {
-    if(s.length() == 1) {
-      return new Regex(sanitized(s.charAt(0)), "*");
-    } else {
-      return new Regex("(?:", sanitized(s), ")*");
-    }
+    return anyAmount(s, EvaluationType.GREEDILY);
   }
 
   /**
@@ -450,7 +442,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given regex repeated any number of times.
    */
   public static Regex anyAmount(Regex r) {
-    return new Regex(r.selfAsGrouped(), "*");
+    return anyAmount(r, EvaluationType.GREEDILY);
   }
 
   /**
@@ -485,7 +477,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given character repeated at least once.
    */
   public static Regex atLeastOne(char c) {
-    return new Regex(sanitized(c), "+");
+    return atLeastOne(c, EvaluationType.GREEDILY);
   }
 
   /**
@@ -494,7 +486,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
    */
   public static Regex atLeastOne(Regex r) {
-    return new Regex(r.selfAsGrouped(), "+");
+    return atLeastOne(r, EvaluationType.GREEDILY);
   }
 
   /**
@@ -526,16 +518,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given string repeated between min and max times
    */
   public static Regex repeat(String s, int min, int max) {
-    if(s.length() == 1) {
-      return new Regex(sanitized(s.charAt(0)),
-              "{", Integer.toString(min), ",",
-              Integer.toString(max), "}");
-    } else {
-      return new Regex(
-              "(?:", sanitized(s), ")",
-              "{", Integer.toString(min), ",",
-              Integer.toString(max), "}");
-    }
+    return repeat(s, min, max, EvaluationType.GREEDILY);
   }
 
   /**
@@ -546,9 +529,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
    */
   public static Regex repeat(Regex g, int min, int max) {
-    return new Regex(g.selfAsGrouped(),
-            "{", Integer.toString(min), ",",
-            Integer.toString(max), "}");
+    return repeat(g, min, max, EvaluationType.GREEDILY);
   }
 
   /**
@@ -623,14 +604,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given string repeated at least min times
    */
   public static Regex repeatAtLeast(String s, int min) {
-    if(s.length() == 1) {
-      return new Regex(sanitized(s.charAt(0)),
-              "{", Integer.toString(min), ",}");
-    } else {
-      return new Regex(
-              "(?:", sanitized(s), ")",
-              "{", Integer.toString(min), ",}");
-    }
+    return repeatAtLeast(s, min, EvaluationType.GREEDILY);
   }
 
   /**
@@ -640,8 +614,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
    */
   public static Regex repeatAtLeast(Regex g, int min) {
-    return new Regex(g.selfAsGrouped(),
-            "{", Integer.toString(min), ",}");
+    return repeatAtLeast(g, min, EvaluationType.GREEDILY);
   }
 
   /**
@@ -683,14 +656,7 @@ public class Regex {
    * @return a regex which matches any string that consists of the given string repeated at most max times
    */
   public static Regex repeatAtMost(String s, int max) {
-    if(s.length() == 1) {
-      return new Regex(sanitized(s.charAt(0)),
-              "{0,", Integer.toString(max), "}");
-    } else {
-      return new Regex(
-              "(?:", sanitized(s), ")",
-              "{0,", Integer.toString(max), "}");
-    }
+    return repeatAtMost(s, max, EvaluationType.GREEDILY);
   }
 
   /**
@@ -700,8 +666,7 @@ public class Regex {
    * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
    */
   public static Regex repeatAtMost(Regex g, int max) {
-    return new Regex(g.selfAsGrouped(),
-            "{0,", Integer.toString(max), "}");
+    return repeatAtMost(g, max, EvaluationType.GREEDILY);
   }
 
   /**
