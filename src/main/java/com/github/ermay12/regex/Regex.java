@@ -596,6 +596,28 @@ public class Regex {
    *******************
    */
 
+  /**
+   * Returns a new regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   *
+   * See Capturing Groups in the class-level documentation
+   * @param i Which capturing group to match on
+   * @return a regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   */
+  public static Regex backReference(int i) {
+    return new Regex("\\", Integer.toString(i));
+  }
+
+  /**
+   * Returns a new regex that matches the same thing that the capturing group with label label within a larger regex matched.
+   *
+   * See Named Capturing Groups in the class-level documentation
+   * @param label Which capturing group to match on
+   * @return a regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   */
+  public static Regex backReference(String label) {
+    return new Regex("\\k", label);
+  }
+
   /*
    **************
    * Lookaround *
@@ -619,12 +641,65 @@ public class Regex {
     );
   }
 
+  /**
+   * Returns a new regex that matches any string that the given regex does not match, without consuming any characters.
+   * The returned regex essentially acts as an "assert" that the rest of the string does not match.
+   *
+   * In technical terms, the new regex performs zero-width negative lookahead on the provided regex
+   *
+   * @param r the regex to perform negative lookahead on
+   * @return a new regex that asserts that the rest of the string does not match r, but does not consume any characters
+   */
+  public static Regex negativeLookahead(Regex r) {
+    return new Regex(
+            "(?!",
+            r.rawRegex,
+            ")"
+    );
+  }
+
+  /**
+   * Returns a new regex that asserts that the preceding part of the string (within a larger regex) matches the provided
+   * regex <code>r</code>, without consuming any characters.
+   * The returned regex essentially acts as an "assert" that the previous part of the string matches.
+   *
+   * In technical terms, the new regex performs zero-width positive lookbehind on the provided regex
+   *
+   * @param r the regex to perform lookbehind on
+   * @return a new regex that asserts that the preceding part of the string matches r, but does not consume any characters
+   */
+  public static Regex lookbehind(Regex r) {
+    return new Regex(
+            "(?<=",
+            r.rawRegex,
+            ")"
+    );
+  }
+
+  /**
+   * Returns a new regex that asserts that the preceding part of the string (within a larger regex) does not match the
+   * provided regex <code>r</code>, without consuming any characters.
+   * The returned regex essentially acts as an "assert" that the previous part of the string does not match.
+   *
+   * In technical terms, the new regex performs zero-width negative lookbehind on the provided regex
+   *
+   * @param r the regex to perform negative lookbehind on
+   * @return a new regex that asserts that the preceding part of the string does not match r, but does not consume any characters
+   */
+  public static Regex negativeLookbehind(Regex r) {
+    return new Regex(
+            "(?<!",
+            r.rawRegex,
+            ")"
+    );
+  }
 
   /*
    ************
    * Matching *
    ************
    */
+
   /**
    * Returns a stream of all matches to this regex.
    * @param input The string that the regex should be matched against
@@ -687,10 +762,7 @@ public class Regex {
     Matcher m = getMatcher(input);
     return m.replaceAll(match -> l.matchCallback(new RegexMatch(match, this)));
   }
-
-
-
-
+  
   /*
    *******************
    * Public Helpers *
