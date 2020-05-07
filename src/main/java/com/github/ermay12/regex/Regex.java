@@ -480,12 +480,16 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at least once.
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated at least once.
+   * Returns a regex which matches any string that consists of the given string repeated at least once.
+   * @param s the string to compose on
+   * @return a regex which matches any string that consists of the given string repeated at least once.
    */
-  public static Regex atLeastOne(char c) {
-    return new Regex(sanitized(c), "+");
+  public static Regex atLeastOne(String s) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "+");
+    } else {
+      return new Regex("(?:", sanitized(s), ")+");
+    }
   }
 
   /**
@@ -498,13 +502,17 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at least once.
-   * @param c the character to compose on
+   * Returns a regex which matches any string that consists of the given string repeated at least once.
+   * @param s the string to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of the given character repeated at least once.
+   * @return a regex which matches any string that consists of the given string repeated at least once.
    */
-  public static Regex atLeastOne(char c, EvaluationType t) {
-    return new Regex(sanitized(c), "+", t.toRegex());
+  public static Regex atLeastOne(String s, EvaluationType t) {
+    if(s.length() == 1) {
+      return new Regex(sanitized(s.charAt(0)), "+", t.toRegex());
+    } else {
+      return new Regex("(?:", sanitized(s), ")+", t.toRegex());
+    }
   }
 
   /**
@@ -751,8 +759,32 @@ public class Regex {
    * @param components the sub-components of the regular expression
    * @return a new regular expression matching the concatenation of the arguments
    */
-  public Regex concatenate(Regex... components) {
+  public static Regex concatenate(Regex... components) {
     return new Regex(components);
+  }
+
+  /**
+   * Returns a regex which matches one of the given strings. If no strings
+   * are provided in the arguments, a regular expression matching nothing is returned
+   * @param ss the strings that are the options
+   * @return a regex which matches one of the given regular expressions
+   */
+  public static Regex oneOf(String... ss) {
+    assert(ss.length > 0); // Should not fail because you cannot call
+                           // oneOf with no arguments due to overloading
+    if(ss.length > 1) {
+      StringBuilder regex = new StringBuilder();
+      regex.append("(?:");
+      regex.append(sanitized(ss[0]));
+      for (int i = 1; i < ss.length; i++) {
+        regex.append("|");
+        regex.append(sanitized(ss[i]));
+      }
+      regex.append(")");
+      return new Regex(regex.toString());
+    } else {
+      return new Regex(sanitized(ss[0]));
+    }
   }
 
   /**
@@ -762,6 +794,8 @@ public class Regex {
    * @return a regex which matches one of the given regular expressions
    */
   public static Regex oneOf(Regex... rs) {
+    assert(rs.length > 0); // Should not fail because you cannot call
+                          // oneOf with no arguments due to overloading
     if(rs.length > 1) {
       StringBuilder regex = new StringBuilder();
       regex.append("(?:");
@@ -772,10 +806,8 @@ public class Regex {
       }
       regex.append(")");
       return new Regex(regex.toString());
-    } else if (rs.length == 1) {
-      return rs[0];
     } else {
-      return new Regex("");
+      return rs[0];
     }
   }
 
