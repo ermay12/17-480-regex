@@ -608,14 +608,13 @@ public class Regex {
   }
 
   /**
-   * Returns a new regex that matches the same thing that the capturing group with label label within a larger regex matched.
+   * Returns a new regex that matches the last thing that the capturing group passed in matched.
    *
-   * See Named Capturing Groups in the class-level documentation
-   * @param label Which capturing group to match on
-   * @return a regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   * @param group Which capturing group to match on
+   * @return a regex that matches the same thing that the last instance of group matched.
    */
-  public static Regex backReference(String label) {
-    return new Regex("\\k", label);
+  public static Regex backReference(CapturingGroup group) {
+    return new Regex("\\k", group.label);
   }
 
   /*
