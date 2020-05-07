@@ -3,7 +3,8 @@
  */
 package com.github.ermay12.regex;
 
-import java.util.regex.MatchResult;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -394,6 +395,10 @@ public class Regex {
       return rawRegex;
   }
 
+  private static final List<Character> metacharacters = Arrays.asList('?', '\\', '-', '=', '[', ']', '(', ')',
+                                                                      '{', '}', '<', '>', '!', '*', '.', '+',
+                                                                      '^', '$', '|' );
+
   /**
    * Returns the given character as a string, escaped if necessary
    * @param c The character to sanitize
@@ -401,30 +406,11 @@ public class Regex {
    */
   static String sanitized(char c) {
     StringBuilder b = new StringBuilder();
-    switch(c) {
-      case '?':
-      case '\\':
-      case '-':
-      case '=':
-      case '[':
-      case ']':
-      case '(':
-      case ')':
-      case '{':
-      case '}':
-      case '<':
-      case '>':
-      case '!':
-      case '*':
-      case '.':
-      case '+':
-      case '^':
-      case '$':
-      case '|':
-        b.append('\\');
-      default:
-        b.append(c);
+    if(metacharacters.contains(c)) {
+      b.append('\\');
     }
+    b.append(c);
+
     return b.toString();
   }
 
