@@ -842,9 +842,9 @@ public class Regex {
    * return a match on the last character of "abca"
    *
    * @param input The string that the regex should be matched against
-   * @param i which match to return
+   * @param i which match to return. 0-indexed
    * @return the i'th section of the input that matches this regex,
-   * or empty if there are less than i + 1 matches. i is 0-indexed.
+   * or empty if there are less than i + 1 matches
    */
   public Optional<RegexMatch> getMatch(String input, int i) {
     Matcher m = getMatcher(input);
