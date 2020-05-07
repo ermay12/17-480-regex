@@ -2,8 +2,6 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
-import java.util.regex.Pattern;
-
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.assertEquals;
@@ -25,7 +23,7 @@ public class YoutubeTest {
                 optional("v"),
                 optional("="),
                 capture(anyAmount(
-                        not(oneOf('#', '&', '?'))
+                        not(CharacterClass.union('#', '&', '?'))
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );

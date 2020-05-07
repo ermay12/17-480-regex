@@ -24,7 +24,7 @@ package com.github.ermay12.regex;
  *    <td style="padding: 1px; padding-left:5px;" headers="matches">The character 'x'</td>
  *  </tr>
  *  <tr>
- *    <td style="padding: 1px;" valign="top" headers="construct basic"><i>oneOf('x', 'a', ...)</i></td>
+ *    <td style="padding: 1px;" valign="top" headers="construct basic"><i>union('x', 'a', ...)</i></td>
  *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any of the characters 'x', 'a', ...</td>
  *  </tr>
  *  <tr>
@@ -159,7 +159,7 @@ public class CharacterClass extends Regex {
      * @param choices the characters that the given character class should be made of
      * @return a character class containing all of the characters passed in
      */
-    public static CharacterClass oneOf(char... choices) {
+    public static CharacterClass union(char... choices) {
         StringBuilder regex = new StringBuilder();
         regex.append("[");
         for(char choice : choices) {
