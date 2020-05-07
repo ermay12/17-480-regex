@@ -18,8 +18,5 @@ public class PasswordTest {
                 repeatAtLeast(WILDCARD, 8),
                 LINE_END
         );
-        assertEquals("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*\\W).{8,}$",
-                     regex.toString());
-
     }
 }

@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
+import static com.github.ermay12.regex.CapturingGroup.*;
 import static org.junit.Assert.assertEquals;
 
 public class YoutubeTest {
@@ -27,8 +28,5 @@ public class YoutubeTest {
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );
-
-        assertEquals("^.*(?:\\Qyoutu.be/\\E|\\Qv/\\E|\\Q/u/w/\\E|\\Qembed/\\E|\\Qwatch?\\E)\\??v?\\=?([^#&\\?]*).*",
-                     regex.toString());
     }
 }
