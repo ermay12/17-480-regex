@@ -4,7 +4,7 @@ package com.github.ermay12.regex;
  * This enum spcifies how to evaluate quantifiers on a regular expression.
  * Depending on this value, quantifiers may behave differently
  */
-public enum EvaluationType {
+public enum EvaluationMethod {
     /**
      * Evaluate the quantifier in a greedy fashion. This matches the maximum amount of characters
      * possible while still maintaining a match.
@@ -24,10 +24,12 @@ public enum EvaluationType {
     POSSESSIVELY,
 
     /**
-     * Evaluate the quantifier in a reluctant fashion. This matches the minimum amount of characters possible while
+     * Evaluate the quantifier in a lazy fashion. This matches the minimum amount of characters possible while
      * still maintaining a match.
+     *
+     * Note: The JAVA regex library calls this evaluation method "reluctant" evaluation
      */
-    RELUCTANTLY;
+    LAZILY;
 
     String toRegex() {
         switch(this) {
@@ -35,7 +37,7 @@ public enum EvaluationType {
                 return "";
             case POSSESSIVELY:
                 return "+";
-            case RELUCTANTLY:
+            case LAZILY:
                 return "?";
         }
         return "";
