@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * <p>This is a factory class for creating RegularExpression's.  This class cannot be instantiated</p>
  *
  * <p>A character class can either be made out of a set of allowed characters, or out of a combination of
- *    other character classes. Note that all methods will escape characters if necessary automatically</p>
+ * other character classes. Note that all methods will escape characters if necessary automatically</p>
  *
  * <h3>Summary of Character Class Constructs</h3>
  * <table style="border: 0; border-collapse: collapse; border-spacing: 0;"><caption>Character Class, and what they match</caption>
@@ -79,7 +79,8 @@ import java.util.regex.Pattern;
  *  </table>
  */
 public class Regex {
-  private Regex(){}
+  private Regex() {
+  }
 
   /*
    **************
@@ -290,13 +291,13 @@ public class Regex {
   }
 
   /**
-   * Returns a RegularExpression which matches any string that consists of the given character repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at least once.
    *
-   * @param c the character to compose on
-   * @return a RegularExpression which matches any string that consists of the given character repeated at least once.
+   * @param s the string to compose on
+   * @return a RegularExpression which matches any string that consists of the given string repeated at least once.
    */
-  public static RegularExpression atLeastOne(char c) {
-    return atLeastOne(c, EvaluationMethod.GREEDILY);
+  public static RegularExpression atLeastOne(String s) {
+    return atLeastOne(s, EvaluationMethod.GREEDILY);
   }
 
   /**
@@ -310,14 +311,18 @@ public class Regex {
   }
 
   /**
-   * Returns a RegularExpression which matches any string that consists of the given character repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at least once.
    *
-   * @param c the character to compose on
+   * @param s the string to compose on
    * @param t the evaluation type
-   * @return a RegularExpression which matches any string that consists of the given character repeated at least once.
+   * @return a regex which matches any string that consists of the given string repeated at least once.
    */
-  public static RegularExpression atLeastOne(char c, EvaluationMethod t) {
-    return new RegularExpression(sanitized(c), "+", t.toRegex());
+  public static RegularExpression atLeastOne(String s, EvaluationMethod t) {
+    if (s.length() == 1) {
+      return new RegularExpression(sanitized(s.charAt(0)), "+", t.toRegex());
+    } else {
+      return new RegularExpression("(?:", sanitized(s), ")+", t.toRegex());
+    }
   }
 
   /**
@@ -443,7 +448,7 @@ public class Regex {
    * @param min the minimum number of times the regex should repeat (inclusive)
    * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    */
-  public static RegularExpression repeatAtLeast (RegularExpression g, int min) {
+  public static RegularExpression repeatAtLeast(RegularExpression g, int min) {
     return repeatAtLeast(g, min, EvaluationMethod.GREEDILY);
   }
 
@@ -476,7 +481,7 @@ public class Regex {
    * @param t   the evaluation type
    * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    */
-  public static RegularExpression repeatAtLeast (RegularExpression g, int min, EvaluationMethod t) {
+  public static RegularExpression repeatAtLeast(RegularExpression g, int min, EvaluationMethod t) {
     return new RegularExpression(g, g.selfAsGrouped(),
         "{", Integer.toString(min), ",}", t.toRegex());
   }
@@ -499,7 +504,7 @@ public class Regex {
    * @param max the maximum number of times the regex should repeat (inclusive)
    * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    */
-  public static RegularExpression repeatAtMost (RegularExpression g, int max) {
+  public static RegularExpression repeatAtMost(RegularExpression g, int max) {
     return repeatAtMost(g, max, EvaluationMethod.GREEDILY);
   }
 
@@ -532,7 +537,7 @@ public class Regex {
    * @param t   the evaluation type
    * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    */
-  public static RegularExpression repeatAtMost (RegularExpression g, int max, EvaluationMethod t) {
+  public static RegularExpression repeatAtMost(RegularExpression g, int max, EvaluationMethod t) {
     return new RegularExpression(g, g.selfAsGrouped(),
         "{0,", Integer.toString(max), "}", t.toRegex());
   }
@@ -553,8 +558,33 @@ public class Regex {
    * @param components the sub-components of the regular expression
    * @return a new regular expression matching the concatenation of the arguments
    */
-  public static RegularExpression concatenate (RegularExpression... components) {
+  public static RegularExpression concatenate(RegularExpression... components) {
     return new RegularExpression(components);
+  }
+
+  /**
+   * Returns a RegularExpression which matches one of the given strings. If no strings
+   * are provided in the arguments, a regular expression matching nothing is returned
+   *
+   * @param ss the strings that are the options
+   * @return a regex which matches one of the given regular expressions
+   */
+  public static RegularExpression oneOf(String... ss) {
+    assert (ss.length > 0); // Should not fail because you cannot call
+    // oneOf with no arguments due to overloading
+    if (ss.length > 1) {
+      StringBuilder regex = new StringBuilder();
+      regex.append("(?:");
+      regex.append(sanitized(ss[0]));
+      for (int i = 1; i < ss.length; i++) {
+        regex.append("|");
+        regex.append(sanitized(ss[i]));
+      }
+      regex.append(")");
+      return new RegularExpression(regex.toString());
+    } else {
+      return new RegularExpression(sanitized(ss[0]));
+    }
   }
 
   /**
@@ -565,6 +595,8 @@ public class Regex {
    * @return a RegularExpression which matches one of the given regular expressions
    */
   public static RegularExpression oneOf(RegularExpression... rs) {
+    assert (rs.length > 0); // Should not fail because you cannot call
+    // oneOf with no arguments due to overloading
     if (rs.length > 1) {
       RegularExpression regex = new RegularExpression("");
       StringBuilder b = new StringBuilder();
@@ -577,10 +609,8 @@ public class Regex {
       b.append(")");
       regex.rawRegex = b.toString();
       return regex;
-    } else if (rs.length == 1) {
-      return rs[0];
     } else {
-      return new RegularExpression("");
+      return rs[0];
     }
   }
 

@@ -107,6 +107,7 @@ public class CharacterClass extends RegularExpression {
      * @return a character class containing all characters found in any of the input character classes.
      */
     public static CharacterClass union(CharacterClass... choices) {
+        assert(choices.length > 0); // Due to overload it isnt actually possible to pass this in
         if(choices.length > 1) {
             StringBuilder regex = new StringBuilder();
             regex.append("[");
@@ -115,17 +116,17 @@ public class CharacterClass extends RegularExpression {
             }
             regex.append("]");
             return new CharacterClass(regex.toString());
-        } else if(choices.length == 1) {
-            return choices[0];
         } else {
-            return new CharacterClass("[]");
+            return choices[0];
         }
     }
 
 
     /**
      * Returns a character class containing all characters found in all of the input character classes.
-     * Equivalent to an intersect operation on sets.
+     * Equivalent to an intersect operation on sets. If no arguments are passed in, returns a character
+     * class that matches no characters.
+     *
      * @param choices the input character classes
      * @return a character class containing all characters found in all of the input character classes.
      */
@@ -144,7 +145,7 @@ public class CharacterClass extends RegularExpression {
         } else if(choices.length == 1) {
             return choices[0];
         } else {
-            return new CharacterClass("[]");
+            return not(WILDCARD);
         }
     }
 }
