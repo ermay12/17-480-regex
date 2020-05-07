@@ -16,6 +16,5 @@ public class EmailTest {
                 capture(atLeastOne(CharacterClass.WILDCARD)),
                 LINE_END
         );
-        assertEquals("^(.+)@(.+)$", regex.toString());
     }
 }

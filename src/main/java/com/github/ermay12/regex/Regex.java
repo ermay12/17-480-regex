@@ -3,10 +3,7 @@
  */
 package com.github.ermay12.regex;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -243,8 +240,9 @@ import java.util.stream.Stream;
 public class Regex {
   private Pattern pattern;
   private String rawRegex;
-  private final String privatesyncobj = "";
-  protected Map<CapturingGroup, Integer> groupToIndex = new HashMap<>();
+  private final Object privatesyncobj = new Object();
+  Map<CapturingGroup, Integer> groupToIndex = new HashMap<>();
+  int numGroups = 0;
 
   /*
    ****************
@@ -276,14 +274,21 @@ public class Regex {
    */
   public Regex(Regex... components) {
     StringBuilder b = new StringBuilder();
-    int groupIndex = 1;
+    numGroups = 0;
     for(Regex inner : components) {
       b.append(inner.rawRegex);
-      final int curGroupIndex = groupIndex;
+      final int curGroupIndex = numGroups;
       inner.groupToIndex.forEach((group, index) -> {
-        this.groupToIndex.put(group, index + curGroupIndex - 1);
+        if (this.groupToIndex.containsKey(group)) {
+          // Remove label from capturing group
+          String toFind = "?<" + group.label + ">";
+          int startIndex = b.indexOf(toFind);
+          assert(startIndex != -1);
+          b.delete(startIndex, startIndex + toFind.length());
+        }
+        this.groupToIndex.put(group, index + curGroupIndex);
       });
-      groupIndex += inner.groupToIndex.size();
+      numGroups += inner.numGroups;
     }
     rawRegex = b.toString();
     pattern = null;
@@ -753,14 +758,8 @@ public class Regex {
   static String sanitized(String s) {
     //TODO(astanesc): Use a regex or .contains?
     StringBuilder b = new StringBuilder();
-    if(s.contains("\\E") || s.length() == 1) {
-      for (char c : s.toCharArray()) {
-        b.append(sanitized(c));
-      }
-    } else {
-      b.append("\\Q");
-      b.append(s);
-      b.append("\\E");
+    for (char c : s.toCharArray()) {
+      b.append(sanitized(c));
     }
     return b.toString();
   }

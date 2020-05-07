@@ -28,8 +28,5 @@ public class YoutubeTest {
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );
-
-        assertEquals("^.*(?:\\Qyoutu.be/\\E|\\Qv/\\E|\\Q/u/w/\\E|\\Qembed/\\E|\\Qwatch?\\E)\\??v?\\=?([^#&\\?]*).*",
-                     regex.toString());
     }
 }
