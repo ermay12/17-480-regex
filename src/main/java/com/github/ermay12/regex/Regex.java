@@ -242,6 +242,12 @@ public class Regex {
   private String rawRegex;
   private final String privatesyncobj = "";
 
+  /*
+   ****************
+   * Constructors *
+   ****************
+   */
+
   /**
    * Constructs a Regular Expression from the regular expression subcomponents.
    * Note that this method does not escape any characters
@@ -273,6 +279,232 @@ public class Regex {
     pattern = null;
   }
 
+
+  /*
+   **************
+   * Characters *
+   **************
+   */
+
+  /**
+   * Returns a regex that matches a single character
+   * @param c the character class
+   * @return a regex that matches a single character
+   */
+  public static Regex single(char c) {
+    return new Regex(sanitized(c));
+  }
+
+  /**
+   * Returns a regex that matches a given string exactly. The given string has any special regex characters
+   * escaped automatically.
+   * @param s the string to match against
+   * @return a regex that matches the given string
+   */
+  public static Regex string(String s) {
+    return new Regex(sanitized(s));
+  }
+
+  /**
+   * Constructs a regular expression from the given raw regular expression. This Regular expression
+   * should conform to the Java Regex language. See {@link Pattern}
+   *
+   * @param regex the sub-components of the regular expression
+   * @return a new regular expression matching the given regex
+   */
+  public static Regex fromRawRegex(String regex) {
+    return new Regex(regex);
+  }
+  /*
+   *********************
+   * Character Classes *
+   *********************
+   */
+
+  /**
+   * Returns a regex that matches a single character within a given character class
+   * @param c the character class
+   * @return a regex that matches a single character within a given character class
+   */
+  public static Regex single(CharacterClass c) {
+    return c;
+  }
+
+
+  /*
+   **************
+   * Boundaries *
+   **************
+   */
+
+  /**
+   * The start of a line. If multi-line mode is off, then this matches the start of input
+   */
+  public static final Regex LINE_START = new Regex("^");
+
+  /**
+   * The end of a line. If multi-line mode is off, then this matches the end of input
+   */
+  public static final Regex LINE_END = new Regex("$");
+
+  /*
+   ***************
+   * Quantifiers *
+   ***************
+   */
+
+  /**
+   * Returns a regex which matches any string that consists of the given character either once or not at all
+   * @param c the character to compose on
+   * @return a regex which matches any string that consists of the given character repeated at most once
+   */
+  public static Regex optional(char c) {
+    return new Regex(sanitized(c), "?");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   * @param r the regex to compose on
+   * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   */
+  public static Regex optional(Regex r) {
+    return new Regex(r.selfAsGrouped(), "?");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated any number of times.
+   * @param c the character to compose on
+   * @return a regex which matches any string that consists of the given character repeated any number of times.
+   */
+  public static Regex anyAmount(char c) {
+    return new Regex(sanitized(c), "*");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given regex repeated any number of times.
+   * @param r the regex to compose on
+   * @return a regex which matches any string that consists of the given regex repeated any number of times.
+   */
+  public static Regex anyAmount(Regex r) {
+    return new Regex(r.selfAsGrouped(), "*");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated at least once.
+   * @param c the character to compose on
+   * @return a regex which matches any string that consists of the given character repeated at least once.
+   */
+  public static Regex atLeastOne(char c) {
+    return new Regex(sanitized(c), "+");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * @param r the regex to compose on
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   */
+  public static Regex atLeastOne(Regex r) {
+    return new Regex(r.selfAsGrouped(), "+");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated exactly amount times
+   * @param c the character to repeat
+   * @param amount the number of times the regex should repeat
+   * @return a regex which matches any string that consists of the given character repeated exactly amount times
+   */
+  public static Regex repeatExactly(char c, int amount) {
+    return new Regex(sanitized(c),
+            "{", Integer.toString(amount), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
+   * @param g the regex to repeat
+   * @param amount the number of times the regex should repeat
+   * @return a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
+   */
+  public static Regex repeatExactly(Regex g, int amount) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(amount), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated at least min times
+   * @param c the character to repeat
+   * @param min the minimum number of times the character should repeat (inclusive)
+   * @return a regex which matches any string that consists of the given character repeated at least min times
+   */
+  public static Regex repeatAtLeast(char c, int min) {
+    return new Regex(sanitized(c),
+            "{", Integer.toString(min), ",}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * @param g the regex to repeat
+   * @param min the minimum number of times the regex should repeat (inclusive)
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   */
+  public static Regex repeatAtLeast(Regex g, int min) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(min), ",}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated at most max times
+   * @param c the character to repeat
+   * @param max the maximum number of times the character should repeat (inclusive)
+   * @return a regex which matches any string that consists of the given character repeated at most max times
+   */
+  public static Regex repeatAtMost(char c, int max) {
+    return new Regex(sanitized(c),
+            "{0,", Integer.toString(max), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * @param g the regex to repeat
+   * @param max the maximum number of times the regex should repeat (inclusive)
+   * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   */
+  public static Regex repeatAtMost(Regex g, int max) {
+    return new Regex(g.selfAsGrouped(),
+            "{0,", Integer.toString(max), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of the given character repeated between min and max times
+   * @param c the character to repeat
+   * @param min the minimum number of times the character should repeat (inclusive)
+   * @param max the maximum number of times the character should repeat (inclusive)
+   * @return a regex which matches any string that consists of the given character repeated between min and max times
+   */
+  public static Regex repeat(char c, int min, int max) {
+    return new Regex(sanitized(c),
+            "{", Integer.toString(min), ",",
+            Integer.toString(max), "}");
+  }
+
+  /**
+   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * @param g the regex to repeat
+   * @param min the minimum number of times the regex should repeat (inclusive)
+   * @param max the maximum number of times the regex should repeat (inclusive)
+   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   */
+  public static Regex repeat(Regex g, int min, int max) {
+    return new Regex(g.selfAsGrouped(),
+            "{", Integer.toString(min), ",",
+            Integer.toString(max), "}");
+  }
+
+  /*
+   *********************
+   * Logical Operators *
+   *********************
+   */
+
   /**
    * Constructs a regular expression from the given sub-components. The
    * new Regex constructed will be the concatenation of all of the subcomponents.
@@ -286,32 +518,122 @@ public class Regex {
     return new Regex(components);
   }
 
-
   /**
-   * Constructs a regular expression from the given raw regular expression. This Regular expression
-   * should conform to the Java Regex language. See {@link Pattern}
-   *
-   * @param regex the sub-components of the regular expression
-   * @return a new regular expression matching the given regex
+   * Returns a regex which matches one of the given regular expressions. If no regular expressions
+   * are provided in the arguments, a regular expression matching nothing is returned
+   * @param rs the regular expressions that are the options
+   * @return a regex which matches one of the given regular expressions
    */
-  public static Regex fromRawRegex(String regex) {
-      return new Regex(regex);
+  public static Regex oneOf(Regex... rs) {
+    if(rs.length > 1) {
+      StringBuilder regex = new StringBuilder();
+      regex.append("(?:");
+      regex.append(rs[0].rawRegex);
+      for (int i = 1; i < rs.length; i++) {
+        regex.append("|");
+        regex.append(rs[i].rawRegex);
+      }
+      regex.append(")");
+      return new Regex(regex.toString());
+    } else if (rs.length == 1) {
+      return rs[0];
+    } else {
+      return new Regex("");
+    }
   }
 
-  /**
-   * Returns a matcher on the given input
-   * @param input the input to match on
-   * @return A matcher for the given input
+  /*
+   ********************
+   * Capturing Groups *
+   ********************
    */
-  private Matcher getMatcher(String input) {
-    if (pattern == null) {
-      synchronized (privatesyncobj) {
-         if(pattern == null) {
-           pattern = pattern.compile(rawRegex);
-         }
-      }
+
+  /**
+   * Returns a regex which matches the same thing that the original regex matches, but now as a capturing group
+   *
+   * See: Capturing groups in the class documentation
+   * @param r The regex to capture
+   * @return a regex matching the same thing that the original regex matches, but now as a capturing group
+   */
+  public static Regex capture(Regex r) {
+    return new CapturingGroup("(", r.rawRegex, ")");
+  }
+
+  private static Regex regexLabel = Regex.fromRawRegex("^[a-zA-Z][a-zA-Z0-9]*$");
+
+  /**
+   * Returns a regex which matches the same thing that the original regex matches, but now as a named capturing
+   * group. See: Named capturing groups in the class documentation
+   *
+   * The label must consist of a letter followed by any number of alphanumeric characters and nothing else.
+   *
+   * @param s the regex to capture
+   * @param label the label of the named capturing group
+   * @return a regex which matches the same thing that the original regex matches, but now as a named capturing
+   *    * group.
+   */
+  public static Regex capture(Regex s, String label) throws IllegalArgumentException {
+    if(!regexLabel.doesMatch(label)) {
+      throw new IllegalArgumentException("Label must be ok");
     }
-    return pattern.matcher(input);
+
+    return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
+  }
+
+  private static class CapturingGroup extends Regex {
+    public CapturingGroup(String... components) {
+      super(components);
+    }
+
+    @Override
+    String selfAsGrouped() {
+      return getRawRegex();
+    }
+  }
+
+  /*
+   *******************
+   * Back-References *
+   *******************
+   */
+
+  /*
+   **************
+   * Lookaround *
+   **************
+   */
+
+  /**
+   * Returns a new regex that matches any string that the given regex matches, without consuming any characters.
+   * The returned regex essentially acts as an "assert" that the rest of the string matches.
+   *
+   * In technical terms, the new regex performs zero-width positive lookahead on the provided regex
+   *
+   * @param r the regex to perform lookahead on
+   * @return a new regex that asserts that the rest of the string matches r, but does not consume any characters
+   */
+  public static Regex lookahead(Regex r) {
+    return new Regex(
+            "(?=",
+            r.rawRegex,
+            ")"
+    );
+  }
+
+
+  /*
+   ************
+   * Matching *
+   ************
+   */
+  /**
+   * Returns a stream of all matches to this regex.
+   * @param input The string that the regex should be matched against
+   * @return a stream of all matches to this regex.
+   */
+  public Stream<RegexMatch> getMatches(String input) {
+    Matcher m = getMatcher(input);
+    return m.results().map(RegexMatch::new);
   }
 
   /**
@@ -367,15 +689,14 @@ public class Regex {
     return m.replaceAll(match -> l.matchCallback(new RegexMatch(match)));
   }
 
-  /**
-   * Returns a stream of all matches to this regex.
-   * @param input The string that the regex should be matched against
-   * @return a stream of all matches to this regex.
+
+
+
+  /*
+   *******************
+   * Public Helpers *
+   *******************
    */
-  public Stream<RegexMatch> getMatches(String input) {
-    Matcher m = getMatcher(input);
-    return m.results().map(RegexMatch::new);
-  }
 
   /**
    * Returns the raw regex string that this regex is composed of
@@ -387,13 +708,34 @@ public class Regex {
 
   @Override
   public String toString() {
-      return rawRegex;
+    return rawRegex;
+  }
+
+  /*
+   *******************
+   * Private Helpers *
+   *******************
+   */
+
+  /**
+   * Returns a matcher on the given input
+   * @param input the input to match on
+   * @return A matcher for the given input
+   */
+  private Matcher getMatcher(String input) {
+    if (pattern == null) {
+      synchronized (privatesyncobj) {
+        if(pattern == null) {
+          pattern = pattern.compile(rawRegex);
+        }
+      }
+    }
+    return pattern.matcher(input);
   }
 
   private static final List<Character> metacharacters = Arrays.asList('?', '\\', '-', '=', '[', ']', '(', ')',
                                                                       '{', '}', '<', '>', '!', '*', '.', '+',
                                                                       '^', '$', '|' );
-
   /**
    * Returns the given character as a string, escaped if necessary
    * @param c The character to sanitize
@@ -408,8 +750,6 @@ public class Regex {
 
     return b.toString();
   }
-
-  private static Regex badEscapeChecker = Regex.fromRawRegex(".*\\\\E.*");
 
   /**
    * Returns the given string, escaping any metacharacters that appear
@@ -445,271 +785,4 @@ public class Regex {
     return r.toString();
   }
 
-  /**
-   * Returns a new regex that matches any string that the given regex matches, without consuming any characters.
-   * The returned regex essentially acts as an "assert" that the rest of the string matches.
-   *
-   * In technical terms, the new regex performs zero-width positive lookahead on the provided regex
-   *
-   * @param r the regex to perform lookahead on
-   * @return a new regex that asserts that the rest of the string matches r, but does not consume any characters
-   */
-  public static Regex lookahead(Regex r) {
-    return new Regex(
-            "(?=",
-            r.rawRegex,
-            ")"
-    );
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated any number of times.
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated any number of times.
-   */
-  public static Regex anyAmount(char c) {
-    return new Regex(sanitized(c), "*");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given regex repeated any number of times.
-   * @param r the regex to compose on
-   * @return a regex which matches any string that consists of the given regex repeated any number of times.
-   */
-  public static Regex anyAmount(Regex r) {
-    return new Regex(r.selfAsGrouped(), "*");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated at least once.
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated at least once.
-   */
-  public static Regex atLeastOne(char c) {
-    return new Regex(sanitized(c), "+");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least once.
-   * @param r the regex to compose on
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
-   */
-  public static Regex atLeastOne(Regex r) {
-    return new Regex(r.selfAsGrouped(), "+");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character either once or not at all
-   * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated at most once
-   */
-  public static Regex optional(char c) {
-    return new Regex(sanitized(c), "?");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
-   * @param r the regex to compose on
-   * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
-   */
-  public static Regex optional(Regex r) {
-    return new Regex(r.selfAsGrouped(), "?");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated between min and max times
-   * @param c the character to repeat
-   * @param min the minimum number of times the character should repeat (inclusive)
-   * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated between min and max times
-   */
-  public static Regex repeat(char c, int min, int max) {
-    return new Regex(sanitized(c),
-                      "{", Integer.toString(min), ",",
-                      Integer.toString(max), "}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
-   * @param g the regex to repeat
-   * @param min the minimum number of times the regex should repeat (inclusive)
-   * @param max the maximum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
-   */
-  public static Regex repeat(Regex g, int min, int max) {
-    return new Regex(g.selfAsGrouped(),
-                     "{", Integer.toString(min), ",",
-                     Integer.toString(max), "}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated at least min times
-   * @param c the character to repeat
-   * @param min the minimum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated at least min times
-   */
-  public static Regex repeatAtLeast(char c, int min) {
-    return new Regex(sanitized(c),
-            "{", Integer.toString(min), ",}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least min times
-   * @param g the regex to repeat
-   * @param min the minimum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
-   */
-  public static Regex repeatAtLeast(Regex g, int min) {
-    return new Regex(g.selfAsGrouped(),
-                     "{", Integer.toString(min), ",}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated at most max times
-   * @param c the character to repeat
-   * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given character repeated at most max times
-   */
-  public static Regex repeatAtMost(char c, int max) {
-    return new Regex(sanitized(c),
-            "{0,", Integer.toString(max), "}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at most max times
-   * @param g the regex to repeat
-   * @param max the maximum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
-   */
-  public static Regex repeatAtMost(Regex g, int max) {
-    return new Regex(g.selfAsGrouped(),
-            "{0,", Integer.toString(max), "}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of the given character repeated exactly amount times
-   * @param c the character to repeat
-   * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of the given character repeated exactly amount times
-   */
-  public static Regex repeatExactly(char c, int amount) {
-    return new Regex(sanitized(c),
-            "{", Integer.toString(amount), "}");
-  }
-
-  /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
-   * @param g the regex to repeat
-   * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
-   */
-  public static Regex repeatExactly(Regex g, int amount) {
-    return new Regex(g.selfAsGrouped(),
-            "{", Integer.toString(amount), "}");
-  }
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a capturing group
-   *
-   * See: Capturing groups in the class documentation
-   * @param r The regex to capture
-   * @return a regex matching the same thing that the original regex matches, but now as a capturing group
-   */
-  public static Regex capture(Regex r) {
-    return new CapturingGroup("(", r.rawRegex, ")");
-  }
-
-  private static Regex regexLabel = Regex.fromRawRegex("^[a-zA-Z][a-zA-Z0-9]*$");
-
-  /**
-   * Returns a regex which matches the same thing that the original regex matches, but now as a named capturing
-   * group. See: Named capturing groups in the class documentation
-   *
-   * The label must consist of a letter followed by any number of alphanumeric characters and nothing else.
-   *
-   * @param s the regex to capture
-   * @param label the label of the named capturing group
-   * @return a regex which matches the same thing that the original regex matches, but now as a named capturing
-   *    * group.
-   */
-  public static Regex capture(Regex s, String label) throws IllegalArgumentException {
-    if(!regexLabel.doesMatch(label)) {
-      throw new IllegalArgumentException("Label must be ok");
-    }
-
-    return new CapturingGroup("(?<", label, ">", s.rawRegex, ")");
-  }
-
-  /**
-   * Returns a regex which matches one of the given regular expressions. If no regular expressions
-   * are provided in the arguments, a regular expression matching nothing is returned
-   * @param rs the regular expressions that are the options
-   * @return a regex which matches one of the given regular expressions
-   */
-  public static Regex oneOf(Regex... rs) {
-    if(rs.length > 1) {
-      StringBuilder regex = new StringBuilder();
-      regex.append("(?:");
-      regex.append(rs[0].rawRegex);
-      for (int i = 1; i < rs.length; i++) {
-        regex.append("|");
-        regex.append(rs[i].rawRegex);
-      }
-      regex.append(")");
-      return new Regex(regex.toString());
-    } else if (rs.length == 1) {
-      return rs[0];
-    } else {
-      return new Regex("");
-    }
-  }
-
-  /**
-   * Returns a regex that matches a single character within a given character class
-   * @param c the character class
-   * @return a regex that matches a single character within a given character class
-   */
-  public static Regex single(CharacterClass c) {
-    return c;
-  }
-
-  /**
-   * Returns a regex that matches a single character
-   * @param c the character class
-   * @return a regex that matches a single character
-   */
-  public static Regex single(char c) {
-    return new Regex(sanitized(c));
-  }
-
-  /**
-   * Returns a regex that matches a given string exactly. The given string has any special regex characters
-   * escaped automatically.
-   * @param s the string to match against
-   * @return a regex that matches the given string
-   */
-  public static Regex string(String s) {
-    return new Regex(sanitized(s));
-  }
-
-  /**
-   * The start of a line. If multi-line mode is off, then this matches the start of input
-   */
-  public static final Regex LINE_START = new Regex("^");
-
-  /**
-   * The end of a line. If multi-line mode is off, then this matches the end of input
-   */
-  public static final Regex LINE_END = new Regex("$");
-
-  private static class CapturingGroup extends Regex {
-    public CapturingGroup(String... components) {
-      super(components);
-    }
-
-    @Override
-    String selfAsGrouped() {
-      return getRawRegex();
-    }
-  }
 }
