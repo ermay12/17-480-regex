@@ -6,19 +6,86 @@ package com.github.ermay12.regex;
 import java.util.*;
 import java.util.regex.Pattern;
 
+
 /**
- * Regex represents a factory like class for RegularExpression construction.
+ * <p>This is a factory class for creating RegularExpression's.  This class cannot be instantiated</p>
+ *
+ * <p>A character class can either be made out of a set of allowed characters, or out of a combination of
+ *    other character classes. Note that all methods will escape characters if necessary automatically</p>
+ *
+ * <h3>Summary of Character Class Constructs</h3>
+ * <table style="border: 0; border-collapse: collapse; border-spacing: 0;"><caption>Character Class, and what they match</caption>
+ *
+ * <tbody>
+ *  <tr style="text-align: left">
+ *    <th style="padding: 1px; text-align: left; background-color: #CCCCFF" id="construct">Construct</th>
+ *    <th style="padding: 1px; text-align: left; background-color: #CCCCFF" id="matches">Matches</th>
+ *  </tr>
+ *
+ *  <tr><th>&nbsp;</th></tr>
+ *
+ *  <tr style="text-align: left"><th style="padding: 1px;"colspan="2" id="basic">Basic Classes</th></tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct basic"><i>character('x')</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">The character 'x'</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct basic"><i>union('x', 'a', ...)</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any of the characters 'x', 'a', ...</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct basic"><i>range('a', 'y')</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any of the characters whose ascii values lie in the range from 'a' to 'y', inclusive.</td>
+ *  </tr>
+ *
+ *  <tr><th>&nbsp;</th></tr>
+ *  <tr style="text-align: left"><th style="padding: 1px;"colspan="2" id="predef">Predefined Character Classes</th></tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct predef"><i>WILDCARD</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any character</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct predef"><i>DIGIT</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any digit (0-9)</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct predef"><i>WORD_CHARACTER</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any word character (a-z, A-Z, 0-9 and _)</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct predef"><i>WHITESPACE</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any whitespace character ( ,\t,\n,\x0B,\f\r)</td>
+ *  </tr>
+ *
+ *  <tr><th>&nbsp;</th></tr>
+ *  <tr style="text-align: left"><th style="padding: 1px;"colspan="2" id="combo">Combination Character Classes</th></tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct combo"><i>not(X)</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">All characters that are not found in
+ *                                                                  the character class X</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct combo"><i>union(X1, X2, ...)</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any character that can be found in <b>any</b>
+ *                                                                  of the character classes X1, X2, ...</td>
+ *  </tr>
+ *  <tr>
+ *    <td style="padding: 1px;" valign="top" headers="construct combo"><i>intersection(X1, X2, ...)</i></td>
+ *    <td style="padding: 1px; padding-left:5px;" headers="matches">Any character that can be found in <b>all</b>
+ *                                                                  of the character classes X1, X2, ...</td>
+ *  </tr>
+ *
+ *  </tbody>
+ *  </table>
  */
 public class Regex {
-
+  private Regex(){}
 
   /*
    **************
    * Characters *
    **************
    */
-
-
   private static final List<Character> metacharacters = Arrays.asList('?', '\\', '-', '=', '[', ']', '(', ')',
       '{', '}', '<', '>', '!', '*', '.', '+',
       '^', '$', '|');
@@ -47,7 +114,7 @@ public class Regex {
    * @return the given string, escaped if necessary
    */
   static String sanitized(String s) {
-    //TODO(astanesc): Use a regex or .contains?
+    //TODO(astanesc): Use a RegularExpression or .contains?
     StringBuilder b = new StringBuilder();
     for (char c : s.toCharArray()) {
       b.append(sanitized(c));
@@ -57,21 +124,21 @@ public class Regex {
 
 
   /**
-   * Returns a regex that matches a single character
+   * Returns a RegularExpression that matches a single character
    *
    * @param c the character class
-   * @return a regex that matches a single character
+   * @return a RegularExpression that matches a single character
    */
   public static RegularExpression single(char c) {
     return new RegularExpression(sanitized(c));
   }
 
   /**
-   * Returns a regex that matches a given string exactly. The given string has any special regex characters
+   * Returns a RegularExpression that matches a given string exactly. The given string has any special RegularExpression characters
    * escaped automatically.
    *
    * @param s the string to match against
-   * @return a regex that matches the given string
+   * @return a RegularExpression that matches the given string
    */
   public static RegularExpression string(String s) {
     return new RegularExpression(sanitized(s));
@@ -94,10 +161,10 @@ public class Regex {
    */
 
   /**
-   * Returns a regex that matches a single character within a given character class
+   * Returns a RegularExpression that matches a single character within a given character class
    *
    * @param c the character class
-   * @return a regex that matches a single character within a given character class
+   * @return a RegularExpression that matches a single character within a given character class
    */
   public static RegularExpression single(CharacterClass c) {
     return c;
@@ -127,32 +194,32 @@ public class Regex {
    */
 
   /**
-   * Returns a regex which matches any string that consists of the given string either once or not at all
+   * Returns a RegularExpression which matches any string that consists of the given string either once or not at all
    *
    * @param s the string to compose on
-   * @return a regex which matches any string that consists of the given string repeated at most once
+   * @return a RegularExpression which matches any string that consists of the given string repeated at most once
    */
   public static RegularExpression optional(String s) {
     return optional(s, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated either once or not at all
    *
    * @param r the regex to compose on
-   * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated either once or not at all
    */
   public static RegularExpression optional(RegularExpression r) {
     return optional(r, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string either once or not at all
+   * Returns a RegularExpression which matches any string that consists of the given string either once or not at all
    * This uses the provide Evaluation method
    *
    * @param s the string to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of the given string repeated at most once
+   * @return a RegularExpression which matches any string that consists of the given string repeated at most once
    */
   public static RegularExpression optional(String s, EvaluationMethod t) {
     if (s.length() == 1) {
@@ -163,44 +230,44 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated either once or not at all.
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated either once or not at all.
    * This uses the provide Evaluation method
    *
-   * @param r the regex to compose on
+   * @param r the RegularExpression to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of any string the given regex matches repeated either once or not at all
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated either once or not at all
    */
   public static RegularExpression optional(RegularExpression r, EvaluationMethod t) {
     return new RegularExpression(r, r.selfAsGrouped(), "?", t.toRegex());
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated any number of times.
+   * Returns a RegularExpression which matches any string that consists of the given string repeated any number of times.
    *
    * @param s the string to compose on
-   * @return a regex which matches any string that consists of the given string repeated any number of times.
+   * @return a RegularExpression which matches any string that consists of the given string repeated any number of times.
    */
   public static RegularExpression anyAmount(String s) {
     return anyAmount(s, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given regex repeated any number of times.
+   * Returns a regex which matches any string that consists of the given RegularExpression repeated any number of times.
    *
    * @param r the regex to compose on
-   * @return a regex which matches any string that consists of the given regex repeated any number of times.
+   * @return a RegularExpression which matches any string that consists of the given regex repeated any number of times.
    */
   public static RegularExpression anyAmount(RegularExpression r) {
     return anyAmount(r, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated any number of times.
+   * Returns a RegularExpression which matches any string that consists of the given string repeated any number of times.
    * This uses the provide Evaluation method
    *
    * @param s the string to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of the given string repeated any number of times.
+   * @return a RegularExpression which matches any string that consists of the given string repeated any number of times.
    */
   public static RegularExpression anyAmount(String s, EvaluationMethod t) {
     if (s.length() == 1) {
@@ -211,93 +278,93 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given regex repeated any number of times.
+   * Returns a RegularExpression which matches any string that consists of the given regex repeated any number of times.
    * This uses the provide Evaluation method
    *
    * @param r the regex to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of the given regex repeated any number of times.
+   * @return a RegularExpression which matches any string that consists of the given regex repeated any number of times.
    */
   public static RegularExpression anyAmount(RegularExpression r, EvaluationMethod t) {
     return new RegularExpression(r, r.selfAsGrouped(), "*", t.toRegex());
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of the given character repeated at least once.
    *
    * @param c the character to compose on
-   * @return a regex which matches any string that consists of the given character repeated at least once.
+   * @return a RegularExpression which matches any string that consists of the given character repeated at least once.
    */
   public static RegularExpression atLeastOne(char c) {
     return atLeastOne(c, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at least once.
    *
    * @param r the regex to compose on
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least once.
    */
   public static RegularExpression atLeastOne(RegularExpression r) {
     return atLeastOne(r, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given character repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of the given character repeated at least once.
    *
    * @param c the character to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of the given character repeated at least once.
+   * @return a RegularExpression which matches any string that consists of the given character repeated at least once.
    */
   public static RegularExpression atLeastOne(char c, EvaluationMethod t) {
     return new RegularExpression(sanitized(c), "+", t.toRegex());
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at least once.
    * This uses the provide Evaluation method
    *
    * @param r the regex to compose on
    * @param t the evaluation type
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least once.
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least once.
    */
   public static RegularExpression atLeastOne(RegularExpression r, EvaluationMethod t) {
     return new RegularExpression(r, r.selfAsGrouped(), "+", t.toRegex());
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated between min and max times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated between min and max times
    *
    * @param s   the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given string repeated between min and max times
+   * @return a RegularExpression which matches any string that consists of the given string repeated between min and max times
    */
   public static RegularExpression repeat(String s, int min, int max) {
     return repeat(s, min, max, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated between min and max times
    *
    * @param g   the regex to repeat
    * @param min the minimum number of times the regex should repeat (inclusive)
    * @param max the maximum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated between min and max times
    */
   public static RegularExpression repeat(RegularExpression g, int min, int max) {
     return repeat(g, min, max, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated between min and max times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated between min and max times
    * This uses the provide Evaluation method
    *
    * @param s   the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param max the maximum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of the given string repeated between min and max times
+   * @return a RegularExpression which matches any string that consists of the given string repeated between min and max times
    */
   public static RegularExpression repeat(String s, int min, int max, EvaluationMethod t) {
     if (s.length() == 1) {
@@ -313,14 +380,14 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated between min and max times
    * This uses the provide Evaluation method
    *
    * @param g   the regex to repeat
    * @param min the minimum number of times the regex should repeat (inclusive)
    * @param max the maximum number of times the regex should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of any string the given regex matches repeated between min and max times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated between min and max times
    */
   public static RegularExpression repeat(RegularExpression g, int min, int max, EvaluationMethod t) {
     return new RegularExpression(g, g.selfAsGrouped(),
@@ -329,11 +396,11 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated exactly amount times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated exactly amount times
    *
    * @param s      the string to repeat
    * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of the given string repeated exactly amount times
+   * @return a RegularExpression which matches any string that consists of the given string repeated exactly amount times
    */
   public static RegularExpression repeatExactly(String s, int amount) {
     if (s.length() == 1) {
@@ -347,11 +414,11 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated exactly amount times
    *
    * @param g      the regex to repeat
    * @param amount the number of times the regex should repeat
-   * @return a regex which matches any string that consists of any string the given regex matches repeated exactly amount times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated exactly amount times
    */
   public static RegularExpression repeatExactly(RegularExpression g, int amount) {
     return new RegularExpression(g, g.selfAsGrouped(),
@@ -359,35 +426,35 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated at least min times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at least min times
    *
    * @param s   the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given string repeated at least min times
+   * @return a RegularExpression which matches any string that consists of the given string repeated at least min times
    */
   public static RegularExpression repeatAtLeast(String s, int min) {
     return repeatAtLeast(s, min, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    *
    * @param g   the regex to repeat
    * @param min the minimum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    */
   public static RegularExpression repeatAtLeast (RegularExpression g, int min) {
     return repeatAtLeast(g, min, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated at least min times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at least min times
    * This uses the provide Evaluation method
    *
    * @param s   the string to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of the given string repeated at least min times
+   * @return a RegularExpression which matches any string that consists of the given string repeated at least min times
    */
   public static RegularExpression repeatAtLeast(String s, int min, EvaluationMethod t) {
     if (s.length() == 1) {
@@ -401,13 +468,13 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    * This uses the provide Evaluation method
    *
    * @param g   the regex to repeat
    * @param min the minimum number of times the regex should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at least min times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at least min times
    */
   public static RegularExpression repeatAtLeast (RegularExpression g, int min, EvaluationMethod t) {
     return new RegularExpression(g, g.selfAsGrouped(),
@@ -415,35 +482,35 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated at most max times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at most max times
    *
    * @param s   the string to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
-   * @return a regex which matches any string that consists of the given string repeated at most max times
+   * @return a RegularExpression which matches any string that consists of the given string repeated at most max times
    */
   public static RegularExpression repeatAtMost(String s, int max) {
     return repeatAtMost(s, max, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    *
    * @param g   the regex to repeat
    * @param max the maximum number of times the regex should repeat (inclusive)
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    */
   public static RegularExpression repeatAtMost (RegularExpression g, int max) {
     return repeatAtMost(g, max, EvaluationMethod.GREEDILY);
   }
 
   /**
-   * Returns a regex which matches any string that consists of the given string repeated at most max times
+   * Returns a RegularExpression which matches any string that consists of the given string repeated at most max times
    * This uses the provide Evaluation method
    *
    * @param s   the string to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of the given string repeated at most max times
+   * @return a RegularExpression which matches any string that consists of the given string repeated at most max times
    */
   public static RegularExpression repeatAtMost(String s, int max, EvaluationMethod t) {
     if (s.length() == 1) {
@@ -457,13 +524,13 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * Returns a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    * This uses the provide Evaluation method
    *
    * @param g   the regex to repeat
    * @param max the maximum number of times the regex should repeat (inclusive)
    * @param t   the evaluation type
-   * @return a regex which matches any string that consists of any string the given regex matches repeated at most max times
+   * @return a RegularExpression which matches any string that consists of any string the given regex matches repeated at most max times
    */
   public static RegularExpression repeatAtMost (RegularExpression g, int max, EvaluationMethod t) {
     return new RegularExpression(g, g.selfAsGrouped(),
@@ -491,11 +558,11 @@ public class Regex {
   }
 
   /**
-   * Returns a regex which matches one of the given regular expressions. If no regular expressions
+   * Returns a RegularExpression which matches one of the given regular expressions. If no regular expressions
    * are provided in the arguments, a regular expression matching nothing is returned
    *
    * @param rs the regular expressions that are the options
-   * @return a regex which matches one of the given regular expressions
+   * @return a RegularExpression which matches one of the given regular expressions
    */
   public static RegularExpression oneOf(RegularExpression... rs) {
     if (rs.length > 1) {
@@ -524,22 +591,22 @@ public class Regex {
    */
 
   /**
-   * Returns a new regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   * Returns a new RegularExpression that matches the same thing that the i^th capturing group within a larger regex matched.
    * <p>
    * See Capturing Groups in the class-level documentation
    *
    * @param i Which capturing group to match on
-   * @return a regex that matches the same thing that the i^th capturing group within a larger regex matched.
+   * @return a RegularExpression that matches the same thing that the i^th capturing group within a larger regex matched.
    */
   public static RegularExpression backReference(int i) {
     return new RegularExpression("\\", Integer.toString(i));
   }
 
   /**
-   * Returns a new regex that matches the last thing that the capturing group passed in matched.
+   * Returns a new RegularExpression that matches the last thing that the capturing group passed in matched.
    *
    * @param group Which capturing group to match on
-   * @return a regex that matches the same thing that the last instance of group matched.
+   * @return a RegularExpression that matches the same thing that the last instance of group matched.
    */
   public static RegularExpression backReference(CapturingGroup group) {
     return new RegularExpression("\\k", group.label);
@@ -552,13 +619,13 @@ public class Regex {
    */
 
   /**
-   * Returns a new regex that matches any string that the given regex matches, without consuming any characters.
+   * Returns a new RegularExpression that matches any string that the given regex matches, without consuming any characters.
    * The returned regex essentially acts as an "assert" that the rest of the string matches.
    * <p>
    * In technical terms, the new regex performs zero-width positive lookahead on the provided regex
    *
    * @param r the regex to perform lookahead on
-   * @return a new regex that asserts that the rest of the string matches r, but does not consume any characters
+   * @return a new RegularExpression that asserts that the rest of the string matches r, but does not consume any characters
    */
   public static RegularExpression lookahead(RegularExpression r) {
     return new RegularExpression(r,
@@ -569,13 +636,13 @@ public class Regex {
   }
 
   /**
-   * Returns a new regex that matches any string that the given regex does not match, without consuming any characters.
+   * Returns a new RegularExpression that matches any string that the given regex does not match, without consuming any characters.
    * The returned regex essentially acts as an "assert" that the rest of the string does not match.
    * <p>
    * In technical terms, the new regex performs zero-width negative lookahead on the provided regex
    *
    * @param r the regex to perform negative lookahead on
-   * @return a new regex that asserts that the rest of the string does not match r, but does not consume any characters
+   * @return a new RegularExpression that asserts that the rest of the string does not match r, but does not consume any characters
    */
   public static RegularExpression negativeLookahead(RegularExpression r) {
     return new RegularExpression(r,
@@ -586,14 +653,14 @@ public class Regex {
   }
 
   /**
-   * Returns a new regex that asserts that the preceding part of the string (within a larger regex) matches the provided
+   * Returns a new RegularExpression that asserts that the preceding part of the string (within a larger regex) matches the provided
    * regex <code>r</code>, without consuming any characters.
    * The returned regex essentially acts as an "assert" that the previous part of the string matches.
    * <p>
    * In technical terms, the new regex performs zero-width positive lookbehind on the provided regex
    *
    * @param r the regex to perform lookbehind on
-   * @return a new regex that asserts that the preceding part of the string matches r, but does not consume any characters
+   * @return a new RegularExpression that asserts that the preceding part of the string matches r, but does not consume any characters
    */
   public static RegularExpression lookbehind(RegularExpression r) {
     return new RegularExpression(r,
@@ -604,14 +671,14 @@ public class Regex {
   }
 
   /**
-   * Returns a new regex that asserts that the preceding part of the string (within a larger regex) does not match the
+   * Returns a new RegularExpression that asserts that the preceding part of the string (within a larger regex) does not match the
    * provided regex <code>r</code>, without consuming any characters.
    * The returned regex essentially acts as an "assert" that the previous part of the string does not match.
    * <p>
    * In technical terms, the new regex performs zero-width negative lookbehind on the provided regex
    *
    * @param r the regex to perform negative lookbehind on
-   * @return a new regex that asserts that the preceding part of the string does not match r, but does not consume any characters
+   * @return a new RegularExpression that asserts that the preceding part of the string does not match r, but does not consume any characters
    */
   public static RegularExpression negativeLookbehind(RegularExpression r) {
     return new RegularExpression(r,
