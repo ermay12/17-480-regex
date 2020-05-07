@@ -3,7 +3,6 @@ package com.github.ermay12.regex;
 import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
-import static com.github.ermay12.regex.CharacterClass.*;
 import static org.junit.Assert.assertEquals;
 
 public final class RomanNumeralTest {
@@ -15,19 +14,19 @@ public final class RomanNumeralTest {
                 anyAmount("M"),
                 capture(
                         oneOf(
-                                new Regex(string("C"), oneOf('M', 'D')),
+                                new Regex(string("C"), CharacterClass.union('M', 'D')),
                                 new Regex(optional("D"), repeat("C", 0, 3))
                         )
                 ),
                 capture(
                         oneOf(
-                                new Regex(string("X"), oneOf('C', 'L')),
+                                new Regex(string("X"), CharacterClass.union('C', 'L')),
                                 new Regex(optional("L"), repeat("X", 0, 3))
                         )
                 ),
                 capture(
                         oneOf(
-                                new Regex(string("I"), oneOf('X', 'V')),
+                                new Regex(string("I"), CharacterClass.union('X', 'V')),
                                 new Regex(optional("V"), repeat("I", 0, 3))
                         )
                 )

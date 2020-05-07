@@ -45,7 +45,7 @@ public class CharacterClass extends Regex {
         }
     }
 
-    public static CharacterClass oneOf(char... choices) {
+    public static CharacterClass union(char... choices) {
         StringBuilder regex = new StringBuilder();
         regex.append("[");
         for(char choice : choices) {
