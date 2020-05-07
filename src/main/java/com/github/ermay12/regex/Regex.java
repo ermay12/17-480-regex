@@ -919,18 +919,42 @@ public class Regex {
    */
   private void appendRegex(StringBuilder b, Regex regex) {
     b.append(regex.rawRegex);
-    final int curGroupIndex = numGroups;
+    ArrayList<Integer> removedValues = new ArrayList<>();
     regex.groupToIndex.forEach((group, index) -> {
       if (this.groupToIndex.containsKey(group)) {
-        // Remove label from capturing group
-        String toFind = "?<" + group.label + ">";
+        // Turn capturing group into non-capturing group
+        String toFind = "<" + group.label + ">";
         int startIndex = b.indexOf(toFind);
         assert(startIndex != -1);
-        b.delete(startIndex, startIndex + toFind.length());
+
+        b.replace(startIndex, startIndex+1, ":");
+        b.delete(startIndex+1, startIndex + toFind.length());
+
+        removedValues.add(index);
+        numGroups--;
       }
-      this.groupToIndex.put(group, index + curGroupIndex);
     });
-    numGroups += regex.numGroups;
+
+    if(!removedValues.isEmpty()) {
+      removedValues.sort(Comparator.naturalOrder());
+
+      this.groupToIndex.replaceAll((cg, index) -> {
+        //TODO: binsearch?
+        int offset = 0;
+        while (offset < removedValues.size()
+                && index < removedValues.get(offset)) {
+          offset++;
+        }
+        index -= removedValues.size() - offset;
+        return index;
+      });
+    }
+
+    final int curGroupIndex = numGroups;
+    regex.groupToIndex.forEach((group, index) -> {
+      this.groupToIndex.put(group, index + curGroupIndex);
+      numGroups++;
+    });
   }
 
   /**
