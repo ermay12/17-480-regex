@@ -224,7 +224,4 @@ public class CharacterClass extends RegexLiteral {
     }
   }
 
-  public Regex toRegex() {
-    return new Regex(this.getRawRegex());
-  }
 }

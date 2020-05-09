@@ -6,9 +6,9 @@ import java.util.regex.Matcher;
 public class RegexMatch {
   String matchString;
   MatchResult match;
-  Regex regex;
+  RegexLiteral regex;
 
-  RegexMatch(MatchResult m, Regex regex) {
+  RegexMatch(MatchResult m, RegexLiteral regex) {
     this.matchString = m.group();
     this.match = m;
     this.regex = regex;

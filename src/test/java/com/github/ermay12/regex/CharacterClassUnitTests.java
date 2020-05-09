@@ -9,177 +9,177 @@ import org.junit.Test;
 public class CharacterClassUnitTests {
   @Test
   public void testBuiltin() {
-    assertTrue(WILDCARD.toRegex().doesMatch("a"));
-    assertTrue(WILDCARD.toRegex().doesMatch("\\"));
-    assertTrue(WILDCARD.toRegex().doesMatch("d"));
-    assertTrue(WILDCARD.toRegex().doesMatch("cab"));
+    assertTrue(WILDCARD.doesMatch("a"));
+    assertTrue(WILDCARD.doesMatch("\\"));
+    assertTrue(WILDCARD.doesMatch("d"));
+    assertTrue(WILDCARD.doesMatch("cab"));
 
-    assertTrue(DIGIT.toRegex().doesMatch("0"));
-    assertTrue(DIGIT.toRegex().doesMatch("1"));
-    assertTrue(DIGIT.toRegex().doesMatch("5"));
-    assertTrue(DIGIT.toRegex().doesMatch("9"));
-    assertFalse(DIGIT.toRegex().doesMatch("a"));
-    assertFalse(DIGIT.toRegex().doesMatch("z"));
-    assertFalse(DIGIT.toRegex().doesMatch("\\"));
+    assertTrue(DIGIT.doesMatch("0"));
+    assertTrue(DIGIT.doesMatch("1"));
+    assertTrue(DIGIT.doesMatch("5"));
+    assertTrue(DIGIT.doesMatch("9"));
+    assertFalse(DIGIT.doesMatch("a"));
+    assertFalse(DIGIT.doesMatch("z"));
+    assertFalse(DIGIT.doesMatch("\\"));
 
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("a"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("b"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("z"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("A"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("B"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("Z"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("0"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("1"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("5"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("9"));
-    assertTrue(WORD_CHARACTER.toRegex().doesMatch("_"));
-    assertFalse(WORD_CHARACTER.toRegex().doesMatch("-"));
-    assertFalse(WORD_CHARACTER.toRegex().doesMatch("."));
-    assertFalse(WORD_CHARACTER.toRegex().doesMatch("?"));
+    assertTrue(WORD_CHARACTER.doesMatch("a"));
+    assertTrue(WORD_CHARACTER.doesMatch("b"));
+    assertTrue(WORD_CHARACTER.doesMatch("z"));
+    assertTrue(WORD_CHARACTER.doesMatch("A"));
+    assertTrue(WORD_CHARACTER.doesMatch("B"));
+    assertTrue(WORD_CHARACTER.doesMatch("Z"));
+    assertTrue(WORD_CHARACTER.doesMatch("0"));
+    assertTrue(WORD_CHARACTER.doesMatch("1"));
+    assertTrue(WORD_CHARACTER.doesMatch("5"));
+    assertTrue(WORD_CHARACTER.doesMatch("9"));
+    assertTrue(WORD_CHARACTER.doesMatch("_"));
+    assertFalse(WORD_CHARACTER.doesMatch("-"));
+    assertFalse(WORD_CHARACTER.doesMatch("."));
+    assertFalse(WORD_CHARACTER.doesMatch("?"));
 
-    assertTrue(WHITESPACE.toRegex().doesMatch(" "));
-    assertTrue(WHITESPACE.toRegex().doesMatch("\t"));
-    assertTrue(WHITESPACE.toRegex().doesMatch("\n"));
-    assertFalse(WHITESPACE.toRegex().doesMatch("a"));
-    assertFalse(WHITESPACE.toRegex().doesMatch("0"));
+    assertTrue(WHITESPACE.doesMatch(" "));
+    assertTrue(WHITESPACE.doesMatch("\t"));
+    assertTrue(WHITESPACE.doesMatch("\n"));
+    assertFalse(WHITESPACE.doesMatch("a"));
+    assertFalse(WHITESPACE.doesMatch("0"));
   }
 
   @Test
   public void testCharacter() {
     CharacterClass c = character('c');
 
-    assertTrue(c.toRegex().doesMatch("c"));
-    assertFalse(c.toRegex().doesMatch("d"));
-    assertFalse(c.toRegex().doesMatch("b"));
+    assertTrue(c.doesMatch("c"));
+    assertFalse(c.doesMatch("d"));
+    assertFalse(c.doesMatch("b"));
   }
 
   @Test
   public void testRange() {
     CharacterClass c = range('a', 'd');
 
-    assertTrue(c.toRegex().doesMatch("a"));
-    assertTrue(c.toRegex().doesMatch("b"));
-    assertTrue(c.toRegex().doesMatch("c"));
-    assertTrue(c.toRegex().doesMatch("d"));
-    assertFalse(c.toRegex().doesMatch("e"));
-    assertFalse(c.toRegex().doesMatch("A"));
-    assertFalse(c.toRegex().doesMatch("."));
+    assertTrue(c.doesMatch("a"));
+    assertTrue(c.doesMatch("b"));
+    assertTrue(c.doesMatch("c"));
+    assertTrue(c.doesMatch("d"));
+    assertFalse(c.doesMatch("e"));
+    assertFalse(c.doesMatch("A"));
+    assertFalse(c.doesMatch("."));
   }
 
   @Test
   public void testNot() {
 
-    assertFalse(not(WILDCARD).toRegex().doesMatch("a"));
-    assertFalse(not(WILDCARD).toRegex().doesMatch("\\"));
-    assertFalse(not(WILDCARD).toRegex().doesMatch("d"));
-    assertFalse(not(WILDCARD).toRegex().doesMatch("cab"));
+    assertFalse(not(WILDCARD).doesMatch("a"));
+    assertFalse(not(WILDCARD).doesMatch("\\"));
+    assertFalse(not(WILDCARD).doesMatch("d"));
+    assertFalse(not(WILDCARD).doesMatch("cab"));
 
-    assertFalse(not(DIGIT).toRegex().doesMatch("0"));
-    assertFalse(not(DIGIT).toRegex().doesMatch("1"));
-    assertFalse(not(DIGIT).toRegex().doesMatch("5"));
-    assertFalse(not(DIGIT).toRegex().doesMatch("9"));
-    assertTrue(not(DIGIT).toRegex().doesMatch("a"));
-    assertTrue(not(DIGIT).toRegex().doesMatch("z"));
-    assertTrue(not(DIGIT).toRegex().doesMatch("\\"));
+    assertFalse(not(DIGIT).doesMatch("0"));
+    assertFalse(not(DIGIT).doesMatch("1"));
+    assertFalse(not(DIGIT).doesMatch("5"));
+    assertFalse(not(DIGIT).doesMatch("9"));
+    assertTrue(not(DIGIT).doesMatch("a"));
+    assertTrue(not(DIGIT).doesMatch("z"));
+    assertTrue(not(DIGIT).doesMatch("\\"));
 
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("a"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("b"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("z"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("A"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("B"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("Z"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("0"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("1"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("5"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("9"));
-    assertFalse(not(WORD_CHARACTER).toRegex().doesMatch("_"));
-    assertTrue(not(WORD_CHARACTER).toRegex().doesMatch("-"));
-    assertTrue(not(WORD_CHARACTER).toRegex().doesMatch("."));
-    assertTrue(not(WORD_CHARACTER).toRegex().doesMatch("?"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("a"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("b"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("z"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("A"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("B"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("Z"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("0"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("1"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("5"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("9"));
+    assertFalse(not(WORD_CHARACTER).doesMatch("_"));
+    assertTrue(not(WORD_CHARACTER).doesMatch("-"));
+    assertTrue(not(WORD_CHARACTER).doesMatch("."));
+    assertTrue(not(WORD_CHARACTER).doesMatch("?"));
 
-    assertFalse(not(WHITESPACE).toRegex().doesMatch(" "));
-    assertFalse(not(WHITESPACE).toRegex().doesMatch("\t"));
-    assertFalse(not(WHITESPACE).toRegex().doesMatch("\n"));
-    assertTrue(not(WHITESPACE).toRegex().doesMatch("a"));
-    assertTrue(not(WHITESPACE).toRegex().doesMatch("0"));
+    assertFalse(not(WHITESPACE).doesMatch(" "));
+    assertFalse(not(WHITESPACE).doesMatch("\t"));
+    assertFalse(not(WHITESPACE).doesMatch("\n"));
+    assertTrue(not(WHITESPACE).doesMatch("a"));
+    assertTrue(not(WHITESPACE).doesMatch("0"));
 
     CharacterClass nc = not(character('c'));
 
-    assertFalse(nc.toRegex().doesMatch("c"));
-    assertTrue(nc.toRegex().doesMatch("d"));
-    assertTrue(nc.toRegex().doesMatch("b"));
+    assertFalse(nc.doesMatch("c"));
+    assertTrue(nc.doesMatch("d"));
+    assertTrue(nc.doesMatch("b"));
 
     CharacterClass nr = not(range('a', 'd'));
 
-    assertFalse(nr.toRegex().doesMatch("a"));
-    assertFalse(nr.toRegex().doesMatch("b"));
-    assertFalse(nr.toRegex().doesMatch("c"));
-    assertFalse(nr.toRegex().doesMatch("d"));
-    assertTrue(nr.toRegex().doesMatch("e"));
-    assertTrue(nr.toRegex().doesMatch("A"));
-    assertTrue(nr.toRegex().doesMatch("."));
+    assertFalse(nr.doesMatch("a"));
+    assertFalse(nr.doesMatch("b"));
+    assertFalse(nr.doesMatch("c"));
+    assertFalse(nr.doesMatch("d"));
+    assertTrue(nr.doesMatch("e"));
+    assertTrue(nr.doesMatch("A"));
+    assertTrue(nr.doesMatch("."));
   }
 
   @Test
   public void testUnion() {
     CharacterClass uc = union('a', '\\', '.');
 
-    assertTrue(uc.toRegex().doesMatch("a"));
-    assertTrue(uc.toRegex().doesMatch("\\"));
-    assertTrue(uc.toRegex().doesMatch("."));
-    assertFalse(uc.toRegex().doesMatch("b"));
-    assertFalse(uc.toRegex().doesMatch("e"));
+    assertTrue(uc.doesMatch("a"));
+    assertTrue(uc.doesMatch("\\"));
+    assertTrue(uc.doesMatch("."));
+    assertFalse(uc.doesMatch("b"));
+    assertFalse(uc.doesMatch("e"));
 
     CharacterClass uu = union(DIGIT, range('a', 'z'));
 
-    assertTrue(uu.toRegex().doesMatch("a"));
-    assertTrue(uu.toRegex().doesMatch("d"));
-    assertTrue(uu.toRegex().doesMatch("z"));
-    assertTrue(uu.toRegex().doesMatch("0"));
-    assertTrue(uu.toRegex().doesMatch("9"));
-    assertFalse(uu.toRegex().doesMatch("."));
-    assertFalse(uu.toRegex().doesMatch("\\"));
+    assertTrue(uu.doesMatch("a"));
+    assertTrue(uu.doesMatch("d"));
+    assertTrue(uu.doesMatch("z"));
+    assertTrue(uu.doesMatch("0"));
+    assertTrue(uu.doesMatch("9"));
+    assertFalse(uu.doesMatch("."));
+    assertFalse(uu.doesMatch("\\"));
 
     CharacterClass single = union(DIGIT);
-    assertTrue(single.toRegex().doesMatch("0"));
-    assertTrue(single.toRegex().doesMatch("9"));
-    assertFalse(single.toRegex().doesMatch("b"));
-    assertFalse(single.toRegex().doesMatch("e"));
-    assertFalse(single.toRegex().doesMatch("."));
-    assertFalse(single.toRegex().doesMatch("\\"));
+    assertTrue(single.doesMatch("0"));
+    assertTrue(single.doesMatch("9"));
+    assertFalse(single.doesMatch("b"));
+    assertFalse(single.doesMatch("e"));
+    assertFalse(single.doesMatch("."));
+    assertFalse(single.doesMatch("\\"));
   }
 
   @Test
   public void testIntersection() {
     CharacterClass big = intersection(range('a', 'e'), range('c', 'j'), range('b', 'd'));
 
-    assertFalse(big.toRegex().doesMatch("a"));
-    assertFalse(big.toRegex().doesMatch("b"));
-    assertTrue(big.toRegex().doesMatch("c"));
-    assertTrue(big.toRegex().doesMatch("d"));
-    assertFalse(big.toRegex().doesMatch("e"));
-    assertFalse(big.toRegex().doesMatch("j"));
-    assertFalse(big.toRegex().doesMatch("k"));
+    assertFalse(big.doesMatch("a"));
+    assertFalse(big.doesMatch("b"));
+    assertTrue(big.doesMatch("c"));
+    assertTrue(big.doesMatch("d"));
+    assertFalse(big.doesMatch("e"));
+    assertFalse(big.doesMatch("j"));
+    assertFalse(big.doesMatch("k"));
 
     CharacterClass med = intersection(range('a', 'e'));
 
-    assertTrue(med.toRegex().doesMatch("a"));
-    assertTrue(med.toRegex().doesMatch("b"));
-    assertTrue(med.toRegex().doesMatch("c"));
-    assertTrue(med.toRegex().doesMatch("d"));
-    assertTrue(med.toRegex().doesMatch("e"));
-    assertFalse(med.toRegex().doesMatch("j"));
-    assertFalse(med.toRegex().doesMatch("k"));
+    assertTrue(med.doesMatch("a"));
+    assertTrue(med.doesMatch("b"));
+    assertTrue(med.doesMatch("c"));
+    assertTrue(med.doesMatch("d"));
+    assertTrue(med.doesMatch("e"));
+    assertFalse(med.doesMatch("j"));
+    assertFalse(med.doesMatch("k"));
 
     CharacterClass small = intersection();
 
-    assertFalse(small.toRegex().doesMatch("a"));
-    assertFalse(small.toRegex().doesMatch("b"));
-    assertFalse(small.toRegex().doesMatch("c"));
-    assertFalse(small.toRegex().doesMatch("d"));
-    assertFalse(small.toRegex().doesMatch("e"));
-    assertFalse(small.toRegex().doesMatch("j"));
-    assertFalse(small.toRegex().doesMatch("k"));
+    assertFalse(small.doesMatch("a"));
+    assertFalse(small.doesMatch("b"));
+    assertFalse(small.doesMatch("c"));
+    assertFalse(small.doesMatch("d"));
+    assertFalse(small.doesMatch("e"));
+    assertFalse(small.doesMatch("j"));
+    assertFalse(small.doesMatch("k"));
   }
 
   @Test

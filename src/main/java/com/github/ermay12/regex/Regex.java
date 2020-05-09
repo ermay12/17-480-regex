@@ -203,9 +203,6 @@ public class Regex extends RegexLiteral {
     super(components);
   }
 
-  public Regex(RegexLiteral component) {
-    super(new RegexLiteral[]{component});
-  }
 
   /*
    **************
@@ -257,7 +254,7 @@ public class Regex extends RegexLiteral {
    * @return a regex that matches a single character within a given character class
    */
   public static Regex single(CharacterClass c) {
-    return c.toRegex();
+    return new Regex(new RegexLiteral[]{c});
   }
 
 
@@ -699,7 +696,7 @@ public class Regex extends RegexLiteral {
       regex.rawRegex = b.toString();
       return new Regex(b.toString());
     } else {
-      return new Regex(rs[0]);
+      return new Regex(new RegexLiteral[]{rs[0]});
     }
   }
 
@@ -805,76 +802,6 @@ public class Regex extends RegexLiteral {
         r.rawRegex,
         ")"
     );
-  }
-
-  /*
-   ************
-   * Matching *
-   ************
-   */
-
-  /**
-   * Returns a stream of all matches to this regex.
-   *
-   * @param input The string that the regex should be matched against
-   * @return a stream of all matches to this regex.
-   */
-  public Stream<RegexMatch> getMatches(String input) {
-    Matcher m = getMatcher(input);
-    return m.results().map((result) -> new RegexMatch(result, this));
-  }
-
-  /**
-   * Get the i'th section of the input that matches this regex.
-   * <p>
-   * As an example, if the regex r matches "a", then r.getMatch("abca", 1) will
-   * return a match on the last character of "abca"
-   *
-   * @param input The string that the regex should be matched against
-   * @param i     which match to return
-   * @return the i'th section of the input that matches this regex
-   */
-  public RegexMatch getMatch(String input, int i) {
-    Matcher m = getMatcher(input);
-    for (int j = 0; j <= i; j++) {
-      m.find();
-    }
-    return new RegexMatch(m.toMatchResult(), this);
-  }
-
-  /**
-   * Get the first section of the input that matches this regex.
-   * <p>
-   * This method is equivalent to getMatch(input, 0)
-   *
-   * @param input The string that the regex should be matched against
-   * @return the first section of the input that matches this regex
-   */
-  public RegexMatch firstMatch(String input) {
-    Matcher m = getMatcher(input);
-    m.find();
-    return new RegexMatch(m.toMatchResult(), this);
-  }
-
-  /**
-   * Checks whether the input matches this regex.
-   *
-   * @param input The string that the regex should be matched against
-   * @return whether the input matches this regex
-   */
-  public boolean doesMatch(String input) {
-    Matcher m = getMatcher(input);
-    return m.find();
-  }
-
-  public String replace(String input, ReplacementRegex replacement) {
-    Matcher m = getMatcher(input);
-    return m.replaceAll(replacement.toString());
-  }
-
-  public String replace(String input, ReplacementLambda l) {
-    Matcher m = getMatcher(input);
-    return m.replaceAll(match -> l.matchCallback(new RegexMatch(match, this)));
   }
 
 

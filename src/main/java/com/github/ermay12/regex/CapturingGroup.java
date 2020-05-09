@@ -79,7 +79,4 @@ public final class CapturingGroup extends RegexLiteral {
             return getRawRegex();
         }
 
-    protected Regex toRegex() {
-        return new Regex(this.getRawRegex());
-    }
 }
