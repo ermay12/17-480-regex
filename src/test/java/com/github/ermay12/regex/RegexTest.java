@@ -6,7 +6,6 @@ package com.github.ermay12.regex;
 import com.google.common.collect.Streams;
 import org.junit.Test;
 
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -44,7 +43,7 @@ public class RegexTest {
       if (match.toString().equals("Is")) {
         return "is";
       }
-      return match.getGroup(1) + "word";
+      return match.group(1) + "word";
     });
     assertEquals("this is the Eword input Sword", newString);
   }

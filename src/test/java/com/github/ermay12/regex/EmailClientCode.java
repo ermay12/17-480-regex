@@ -22,7 +22,7 @@ public class EmailClientCode {
 
         Optional<RegexMatch> result = regex.firstMatch(input);
         assert(result.isPresent());
-        assertEquals("hello", result.get().getGroup(nameGroup));
-        assertEquals("example.com", result.get().getGroup(domainGroup));
+        assertEquals("hello", result.get().group(nameGroup));
+        assertEquals("example.com", result.get().group(domainGroup));
     }
 }
