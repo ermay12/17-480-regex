@@ -1,10 +1,13 @@
 package com.github.ermay12.regex;
 
+import org.junit.Test;
+
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 
 public class PasswordClientCode {
-    public static void main(String[] args) {
+    @Test
+    public void validatePassword() {
         Regex regex = new Regex(
                 LINE_START,
                 lookahead(new Regex(anyAmount(WILDCARD), single(range('a', 'z')))),
@@ -14,6 +17,12 @@ public class PasswordClientCode {
                 repeatAtLeast(WILDCARD, 8),
                 LINE_END
         );
-        System.out.println(regex);
+
+        String input = "pAssword1234!";
+        if (regex.doesMatch(input)) {
+            System.out.println("Password is valid!");
+        } else {
+            System.out.println("Password is not valid. Please try again.");
+        }
     }
 }

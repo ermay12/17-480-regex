@@ -1,33 +1,38 @@
 package com.github.ermay12.regex;
 
+import org.junit.Test;
+
+import java.util.stream.Stream;
+
 import static com.github.ermay12.regex.Regex.*;
-import static com.github.ermay12.regex.CapturingGroup.*;
+import static com.github.ermay12.regex.CharacterClass.*;
+
 
 public class RomanNumeralClientCode {
-    public static void main(String[] args) {
+    @Test
+    public void checkRomanNumeral() {
         Regex regex = new Regex(
-                LINE_START,
-                lookahead(CharacterClass.WILDCARD),
+                lookahead(union('M', 'D', 'C', 'X', 'L', 'V', 'I')),
                 anyAmount("M"),
-                capture(
-                        oneOf(
-                                new Regex(string("C"), CharacterClass.union('M', 'D')),
-                                new Regex(optional("D"), repeat("C", 0, 3))
-                        )
+                oneOf(
+                        concatenate(string("C"), union('M', 'D')),
+                        concatenate(optional("D"), repeat("C", 0, 3))
                 ),
-                capture(
-                        oneOf(
-                                new Regex(string("X"), CharacterClass.union('C', 'L')),
-                                new Regex(optional("L"), repeat("X", 0, 3))
-                        )
+                oneOf(
+                        concatenate(string("X"), union('C', 'L')),
+                        concatenate(optional("L"), repeat("X", 0, 3))
                 ),
-                capture(
-                        oneOf(
-                                new Regex(string("I"), CharacterClass.union('X', 'V')),
-                                new Regex(optional("V"), repeat("I", 0, 3))
-                        )
+                oneOf(
+                        concatenate(string("I"), union('X', 'V')),
+                        concatenate(optional("V"), repeat("I", 0, 3))
                 )
         );
-        System.out.println(regex);
+        String input = "Roman numeral MCMXCIX is my favorite.";
+
+        Stream<RegexMatch> results = regex.getMatches(input);
+        results.forEach(result -> {
+            System.out.println("Roman Numeral: " + result);
+        });
+
     }
 }

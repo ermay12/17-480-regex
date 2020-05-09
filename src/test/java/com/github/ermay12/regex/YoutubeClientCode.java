@@ -1,11 +1,14 @@
 package com.github.ermay12.regex;
 
+import org.junit.Test;
+
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
 
 public class YoutubeClientCode {
-    public static void main(String[] args) {
+    @Test
+    public void checkYoutubeLink() {
         Regex regex = new Regex(
                 LINE_START,
                 anyAmount(CharacterClass.WILDCARD),
@@ -24,6 +27,12 @@ public class YoutubeClientCode {
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );
-        System.out.println(regex);
+
+        String input = "Check this out! https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        if (regex.doesMatch(input)) {
+            System.out.println("Matches!");
+        } else {
+            System.out.println("Could not find Youtube link");
+        }
     }
 }

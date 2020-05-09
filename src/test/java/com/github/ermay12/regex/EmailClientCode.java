@@ -1,11 +1,14 @@
 package com.github.ermay12.regex;
 
 
+import org.junit.Test;
+
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
 
 public class EmailClientCode {
-    public static void main(String[] args) {
+    @Test
+    public void checkEmail() {
         Regex regex = new Regex(
                 LINE_START,
                 capture(atLeastOne(CharacterClass.WILDCARD)),
@@ -13,6 +16,11 @@ public class EmailClientCode {
                 capture(atLeastOne(CharacterClass.WILDCARD)),
                 LINE_END
         );
-        System.out.println(regex);
+        String input = "hello@example.com";
+        if (regex.doesMatch(input)) {
+            System.out.println("Matches!");
+        } else {
+            System.out.println("Invalid email :(");
+        }
     }
 }

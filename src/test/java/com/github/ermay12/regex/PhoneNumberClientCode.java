@@ -1,11 +1,16 @@
 package com.github.ermay12.regex;
 
+import org.junit.Test;
+
+import java.util.Optional;
+
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
 
 public class PhoneNumberClientCode {
-    public static void main(String[] args) {
+    @Test
+    public void checkPhoneNumber() {
         Regex separator =
                 optional(
                         oneOf(
@@ -22,6 +27,13 @@ public class PhoneNumberClientCode {
                                     capture(DIGIT),
                                     separator);
         }
-        System.out.println(phoneNumber);
+
+        String input = "Call me at (908)555-1234";
+        Optional<RegexMatch> result = phoneNumber.firstMatch(input);
+        if (result.isPresent()) {
+            System.out.println("Number: " + result.get());
+        } else {
+            System.out.println("Could not find phone number");
+        }
     }
 }
