@@ -3,13 +3,7 @@
  */
 package com.github.ermay12.regex;
 
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * This class represents a compiled Regular expression. Instances of this class are immutable and
@@ -233,7 +227,7 @@ public class Regex extends RegexLiteral {
    *
    * @param components the sub-components of the regular expression
    */
-  public Regex(RegexLiteral... components) {
+  Regex(RegexLiteral... components) {
     super(components);
   }
 

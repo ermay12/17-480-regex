@@ -24,13 +24,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * <p> Capturing groups are numbered by counting their opening parentheses from
  * left to right.  In the expression </p>
  * <pre>
- * capturing(
- * capturing(string("A")),
- * capturing(
- * string("B"),
- * capturing(string("C")
- * )
- * )
+ *   capturing(
+ *     capturing(string("A")),
+ *     capturing(
+ *       string("B"),
+ *       capturing(string("C")
+ *     )
+ *   )
  * </pre>
  * <p> there are four such groups: </p>
  *
