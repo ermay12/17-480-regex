@@ -23,9 +23,7 @@ public class PhoneNumberClientCode {
 
         Regex phoneNumber = separator;
         for (int i = 0; i < 10; i++) {
-            phoneNumber = new Regex(phoneNumber,
-                                    capture(DIGIT),
-                                    separator);
+            phoneNumber = new Regex(phoneNumber, DIGIT, separator);
         }
 
         String input = "Call me at (908)555-1234";

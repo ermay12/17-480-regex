@@ -10,10 +10,10 @@ public class PasswordClientCode {
     public void validatePassword() {
         Regex regex = new Regex(
                 LINE_START,
-                lookahead(new Regex(anyAmount(WILDCARD), single(range('a', 'z')))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(range('A', 'Z')))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(DIGIT))),
-                lookahead(new Regex(anyAmount(WILDCARD), single(not(WORD_CHARACTER)))),
+                lookahead(new Regex(anyAmount(WILDCARD), range('a', 'z'))),
+                lookahead(new Regex(anyAmount(WILDCARD), range('A', 'Z'))),
+                lookahead(new Regex(anyAmount(WILDCARD), DIGIT)),
+                lookahead(new Regex(anyAmount(WILDCARD), not(WORD_CHARACTER))),
                 repeatAtLeast(WILDCARD, 8),
                 LINE_END
         );

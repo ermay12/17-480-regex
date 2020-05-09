@@ -2,7 +2,7 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
@@ -29,10 +29,13 @@ public class RomanNumeralClientCode {
         );
         String input = "Roman numeral MCMXCIX is my favorite.";
 
-        Stream<RegexMatch> results = regex.getMatches(input);
-        results.forEach(result -> {
-            System.out.println("Roman Numeral: " + result);
-        });
+        Optional<RegexMatch> result = regex.firstMatch(input);
+        if (result.isPresent()) {
+            System.out.println("Roman Numeral: " + result.get());
+        }
+        else {
+            System.out.println("No roman numeral found");
+        }
 
     }
 }

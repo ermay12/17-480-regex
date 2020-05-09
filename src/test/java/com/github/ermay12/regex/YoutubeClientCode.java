@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
-import static com.github.ermay12.regex.CapturingGroup.*;
 
 public class YoutubeClientCode {
     @Test
@@ -22,9 +21,9 @@ public class YoutubeClientCode {
                 optional("?"),
                 optional("v"),
                 optional("="),
-                capture(anyAmount(
+                anyAmount(
                         not(CharacterClass.union('#', '&', '?'))
-                )),
+                ),
                 anyAmount(CharacterClass.WILDCARD)
         );
 
