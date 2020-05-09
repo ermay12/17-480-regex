@@ -11,7 +11,7 @@ import static com.github.ermay12.regex.CharacterClass.*;
 public class RomanNumeralClientCode {
     @Test
     public void checkRomanNumeral() {
-        Regex regex = new Regex(
+        Regex regex = concatenate(
                 lookahead(union('M', 'D', 'C', 'X', 'L', 'V', 'I')),
                 anyAmount("M"),
                 oneOf(
@@ -30,12 +30,6 @@ public class RomanNumeralClientCode {
         String input = "Roman numeral MCMXCIX is my favorite.";
 
         Optional<RegexMatch> result = regex.firstMatch(input);
-        if (result.isPresent()) {
-            System.out.println("Roman Numeral: " + result.get());
-        }
-        else {
-            System.out.println("No roman numeral found");
-        }
-
+        assert(result.isPresent());
     }
 }

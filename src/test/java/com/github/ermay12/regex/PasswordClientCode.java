@@ -8,21 +8,17 @@ import static com.github.ermay12.regex.CharacterClass.*;
 public class PasswordClientCode {
     @Test
     public void validatePassword() {
-        Regex regex = new Regex(
+        Regex regex = concatenate(
                 LINE_START,
-                lookahead(new Regex(anyAmount(WILDCARD), range('a', 'z'))),
-                lookahead(new Regex(anyAmount(WILDCARD), range('A', 'Z'))),
-                lookahead(new Regex(anyAmount(WILDCARD), DIGIT)),
-                lookahead(new Regex(anyAmount(WILDCARD), not(WORD_CHARACTER))),
+                lookahead(concatenate(anyAmount(WILDCARD), range('a', 'z'))),
+                lookahead(concatenate(anyAmount(WILDCARD), range('A', 'Z'))),
+                lookahead(concatenate(anyAmount(WILDCARD), DIGIT)),
+                lookahead(concatenate(anyAmount(WILDCARD), not(WORD_CHARACTER))),
                 repeatAtLeast(WILDCARD, 8),
                 LINE_END
         );
 
         String input = "pAssword1234!";
-        if (regex.doesMatch(input)) {
-            System.out.println("Password is valid!");
-        } else {
-            System.out.println("Password is not valid. Please try again.");
-        }
+        assert(regex.doesMatch(input));
     }
 }

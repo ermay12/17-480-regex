@@ -8,9 +8,9 @@ import static com.github.ermay12.regex.CharacterClass.*;
 public class YoutubeClientCode {
     @Test
     public void checkYoutubeLink() {
-        Regex regex = new Regex(
+        Regex regex = concatenate(
                 LINE_START,
-                anyAmount(CharacterClass.WILDCARD),
+                anyAmount(WILDCARD),
                 oneOf(
                         string("youtu.be/"),
                         string("v/"),
@@ -22,16 +22,12 @@ public class YoutubeClientCode {
                 optional("v"),
                 optional("="),
                 anyAmount(
-                        not(CharacterClass.union('#', '&', '?'))
+                        not(union('#', '&', '?'))
                 ),
-                anyAmount(CharacterClass.WILDCARD)
+                anyAmount(WILDCARD)
         );
 
         String input = "Check this out! https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-        if (regex.doesMatch(input)) {
-            System.out.println("Matches!");
-        } else {
-            System.out.println("Could not find Youtube link");
-        }
+        assert(regex.doesMatch(input));
     }
 }
