@@ -2,20 +2,19 @@ package com.github.ermay12.regex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
 public class RegexMatch {
   String matchString;
-  Regex regex;
+  RegexLiteral regex;
   int index;
   List<String> groups;
 
-  RegexMatch(Matcher m, Regex regex, int index) {
+  RegexMatch(Matcher m, RegexLiteral regex, int index) {
     this.matchString = m.group();
-    int numGroups = m.groupCount()+1;
+    int numGroups = m.groupCount() + 1;
     this.groups = new ArrayList<>();
-    for(int i = 0; i < numGroups; i++){
+    for (int i = 0; i < numGroups; i++) {
       groups.add(m.group(i));
     }
     this.regex = regex;
