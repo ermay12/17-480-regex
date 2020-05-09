@@ -296,6 +296,14 @@ public class Regex extends RegexLiteral {
    * The start of a line. If multi-line mode is off, then this matches the start of input
    */
   public static final Regex LINE_START = new Regex("^");
+  /**
+   * Any boundary to a word character
+   */
+  public static final Regex WORD_BOUNDARY = new Regex("\\b");
+  /**
+   * Any non boundary to a word character
+   */
+  public static final Regex NOT_WORD_BOUNDARY = new Regex("\\B");
 
   /**
    * The end of a line. If multi-line mode is off, then this matches the end of input
