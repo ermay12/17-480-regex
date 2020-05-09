@@ -430,4 +430,30 @@ public class RegexUnitTests {
         assertTrue(testRegex.getMatch("abcabc", 1).isPresent());
         assertTrue(testRegex.getMatch("abcabc", 2).isEmpty());
     }
+
+    @Test
+    public void testRawRegexAdvanced() {
+        Regex testRegex = Regex.fromRawRegex("(?<asd>(?<asd2>blah)nlah) i'm checking?<asd> " +
+                                             "\\(?<asd>ha this isnt actually a capturing group\\)");
+
+        assertTrue(testRegex.doesMatch("blahnlah i'm checking<asd> (<asd>ha this isnt actually a capturing group)"));
+        assertTrue(testRegex.doesMatch("blahnlah i'm checkin<asd> (<asd>ha this isnt actually a capturing group)"));
+        assertTrue(testRegex.doesMatch("blahnlah i'm checking<asd> <asd>ha this isnt actually a capturing group)"));
+
+        RegexMatch m = testRegex.firstMatch("blahnlah i'm checking<asd> (<asd>ha this isnt actually a capturing group)").get();
+        assertEquals("blahnlah", m.getGroup(1));
+        assertEquals("blah", m.getGroup(2));
+
+        Regex test2 = Regex.fromRawRegex("\\Qthis is also not (?<asd>a capturing group)\\E");
+        assertTrue(test2.doesMatch("this is also not (?<asd>a capturing group)"));
+
+        Regex test3 = Regex.fromRawRegex("\\Qthis is also not (?<asd>a capturing group)\\E");
+        assertTrue(test3.doesMatch("this is also not (?<asd>a capturing group)"));
+
+        Regex test4 = Regex.fromRawRegex("\\Qthis is also\\E not (?<asd>a capturing group)\\\\E");
+        assertTrue(test4.doesMatch("this is also not a capturing group\\E"));
+
+        Regex test5 = Regex.fromRawRegex("\\Qthis is also\\\\E not (?<asd>a capturing group)\\\\E");
+        assertTrue(test5.doesMatch("this is also\\ not a capturing group\\E"));
+    }
 }

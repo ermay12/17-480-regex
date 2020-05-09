@@ -3,12 +3,15 @@
  */
 package com.github.ermay12.regex;
 
+import static com.github.ermay12.regex.CapturingGroup.*;
+import static com.github.ermay12.regex.CharacterClass.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 /**
@@ -266,6 +269,36 @@ public class Regex extends RegexLiteral {
   }
 
   /**
+   * This pattern finds any named capturing groups, accounting for quotations and escapes. It is equivalent to:
+      concatenate(
+              LINE_START,
+              capture(
+                      anyAmount(concatenate(
+                            anyAmount(WILDCARD),
+                            negativeLookbehind(string("\\")),
+                            anyAmount("\\\\"),
+                            string("\\Q"),
+                            anyAmount(WILDCARD, EvaluationMethod.LAZILY),
+                            string("\\E")
+                        ), EvaluationMethod.POSSESSIVELY),
+                      anyAmount(WILDCARD),
+                      negativeLookbehind(string("\\")),
+                      anyAmount("\\\\"),
+                      string("(")
+              ),
+              string("?<"),
+              anyAmount(WILDCARD, EvaluationMethod.LAZILY)
+      );
+   */
+  private static final Pattern FIND_NAMED_PATTERN =
+          Pattern.compile("\\G((?:.*(?<!\\\\)(?:\\\\\\\\)*\\\\Q.*?\\\\E)*+.*(?:(?<!\\\\)(?:\\\\\\\\)*)\\()\\?<.*?>");
+
+
+  private static final Pattern FIND_CAPTURE_GROUP_PATTERN =
+          Pattern.compile("\\G((?:.*(?<!\\\\)(?:\\\\\\\\)*\\\\Q.*?\\\\E)*+.*(?:(?<!\\\\)(?:\\\\\\\\)*))\\((?!\\?)");
+
+
+  /**
    * Constructs a regular expression from the given raw regular expression. This Regular expression
    * should conform to the Java Regex language. See {@link Pattern}
    *
@@ -273,7 +306,19 @@ public class Regex extends RegexLiteral {
    * @return a new regular expression matching the given regex
    */
   public static Regex fromRawRegex(CharSequence regex) {
-    return new Regex(regex);
+    Matcher findNamed = FIND_NAMED_PATTERN.matcher(regex);
+    CharSequence namedRemoved = findNamed.replaceAll("$1");
+
+    Matcher findUnnamed = FIND_CAPTURE_GROUP_PATTERN.matcher(namedRemoved);
+    long numGroups = findUnnamed.results().count();
+
+    Regex r = new Regex(namedRemoved);
+
+    // Regexes cant be this big I promise
+    assert(numGroups < Integer.MAX_VALUE);
+    r.numGroups = (int)numGroups;
+
+    return r;
   }
   /*
    *********************
