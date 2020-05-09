@@ -6,6 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a matchable regular expression.
+ */
 public abstract class RegexLiteral {
   Pattern pattern;
   String rawRegex;
