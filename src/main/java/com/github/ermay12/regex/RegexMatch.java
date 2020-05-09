@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-public class RegexMatch {
-  String matchString;
-  RegexLiteral regex;
+public final class RegexMatch {
+  private final String matchString;
+  private final RegexLiteral regex;
   private final int matchIndex;
   private final int matchStartIndex;
   private final int matchStopIndex;
