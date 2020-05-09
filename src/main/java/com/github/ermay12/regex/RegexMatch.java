@@ -7,18 +7,28 @@ import java.util.regex.Matcher;
 public class RegexMatch {
   String matchString;
   RegexLiteral regex;
-  int index;
-  List<String> groups;
+  private final int matchIndex;
+  private final int matchStartIndex;
+  private final int matchStopIndex;
+  private final List<String> groups;
+  private final List<Integer> groupStartIndexes;
+  private final List<Integer> groupStopIndexes;
 
-  RegexMatch(Matcher m, RegexLiteral regex, int index) {
+  RegexMatch(Matcher m, RegexLiteral regex, int matchIndex) {
     this.matchString = m.group();
     int numGroups = m.groupCount() + 1;
     this.groups = new ArrayList<>();
+    this.groupStartIndexes = new ArrayList<>();
+    this.groupStopIndexes = new ArrayList<>();
     for (int i = 0; i < numGroups; i++) {
       groups.add(m.group(i));
+      groupStartIndexes.add(m.start(i));
+      groupStopIndexes.add(m.end(i));
     }
     this.regex = regex;
-    this.index = index;
+    this.matchIndex = matchIndex;
+    this.matchStartIndex = m.start();
+    this.matchStopIndex = m.end();
   }
 
 
@@ -33,9 +43,35 @@ public class RegexMatch {
     return groups.get(this.regex.groupToIndex.get(group));
   }
 
-  public int getIndex() {
-    return index;
+  public int matchIndex() {
+    return matchIndex;
   }
+
+  public int matchStartIndex(){
+    return this.matchStartIndex;
+  }
+
+  public int getMatchStopIndex(){
+    return this.matchStopIndex;
+  }
+
+  public int getGroupStartIndex(int i){
+    return groupStartIndexes.get(i);
+  }
+
+  public int getGroupStartIndex(CapturingGroup group){
+    return groupStartIndexes.get(this.regex.groupToIndex.get(group));
+  }
+
+
+  public int getGroupStopIndex(int i){
+    return groupStopIndexes.get(i);
+  }
+
+  public int getGroupStopIndex(CapturingGroup group){
+    return groupStopIndexes.get(this.regex.groupToIndex.get(group));
+  }
+
 
   public String getGroup(int number) {
     return this.groups.get(number);
