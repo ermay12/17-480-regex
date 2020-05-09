@@ -45,6 +45,19 @@ public class RegexUnitTests {
         assertFalse(testEnd.doesMatch("b"));
         assertTrue(testEnd.doesMatch("baba"));
         assertEquals("a", testEnd.firstMatch("baba").get().getMatchString());
+
+
+        Regex testWordBoundary = concatenate(WORD_BOUNDARY, single('a'));
+
+        assertTrue(testWordBoundary.doesMatch("a"));
+        assertTrue(testWordBoundary.doesMatch(" a"));
+        assertFalse(testWordBoundary.doesMatch("ba"));
+
+        Regex testNotWordBoundary = concatenate(NOT_WORD_BOUNDARY,single('a'));
+
+        assertFalse(testNotWordBoundary.doesMatch("a"));
+        assertFalse(testNotWordBoundary.doesMatch(" a"));
+        assertTrue(testNotWordBoundary.doesMatch("ba"));
     }
 
     @Test
@@ -430,4 +443,5 @@ public class RegexUnitTests {
         assertTrue(testRegex.getMatch("abcabc", 1).isPresent());
         assertTrue(testRegex.getMatch("abcabc", 2).isEmpty());
     }
+
 }
