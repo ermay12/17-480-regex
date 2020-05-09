@@ -6,6 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * This class represents a matchable regular expression.
+ */
 public abstract class RegexLiteral {
   Pattern pattern;
   String rawRegex;
@@ -91,13 +94,13 @@ public abstract class RegexLiteral {
     Matcher m = getMatcher(input);
     if (m.find()) {
       RegexMatch firstMatch = new RegexMatch(m, this, 0);
-      return Stream.iterate(firstMatch, (prevMatch) -> {
+      return Stream.iterate(firstMatch, Objects::nonNull, (prevMatch) -> {
         if (m.find()) {
-          return new RegexMatch(m, this, prevMatch.getIndex() + 1);
+          return new RegexMatch(m, this, prevMatch.matchIndex() + 1);
         } else {
           return null;
         }
-      }).takeWhile(match -> match != null);
+      });
     } else {
       return Stream.empty();
     }

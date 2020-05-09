@@ -1,5 +1,8 @@
 package com.github.ermay12.regex;
 
+/**
+ * This class represents a regex replacement.  It currently only works with raw replacement strings.
+ */
 public class ReplacementRegex {
   String replacementString;
 

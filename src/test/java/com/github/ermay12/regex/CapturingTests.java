@@ -15,28 +15,28 @@ public class CapturingTests {
         Regex captureFun = concatenate(string("hi"), cap, string("foobar"));
 
         assertTrue(captureFun.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", captureFun.firstMatch("hi123foobar").get().getGroup(0));
-        assertEquals("123", captureFun.firstMatch("hi123foobar").get().getGroup(1));
-        assertEquals("123", captureFun.firstMatch("hi123foobar").get().getGroup(cap));
+        assertEquals("hi123foobar", captureFun.firstMatch("hi123foobar").get().group(0));
+        assertEquals("123", captureFun.firstMatch("hi123foobar").get().group(1));
+        assertEquals("123", captureFun.firstMatch("hi123foobar").get().group(cap));
         assertThrows(IllegalArgumentException.class, () -> {
-            captureFun.firstMatch("hi123foobar").get().getGroup(badcap);
+            captureFun.firstMatch("hi123foobar").get().group(badcap);
         });
 
         CapturingGroup cap2 = capture(anyAmount(DIGIT));
         Regex anyAmount = concatenate(string("hi"), cap2, string("foobar"));
 
         assertTrue(anyAmount.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", anyAmount.firstMatch("hi123foobar").get().getGroup(0));
-        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().getGroup(1));
-        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().getGroup(cap2));
+        assertEquals("hi123foobar", anyAmount.firstMatch("hi123foobar").get().group(0));
+        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().group(1));
+        assertEquals("123", anyAmount.firstMatch("hi123foobar").get().group(cap2));
 
         CapturingGroup cap3 = capture(anyAmount(DIGIT));
         Regex lastOnly = concatenate(string("hi"), cap3, string("foobar"));
 
         assertTrue(lastOnly.doesMatch("hi123foobar"));
-        assertEquals("hi123foobar", lastOnly.firstMatch("hi123foobar").get().getGroup(0));
-        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().getGroup(1));
-        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().getGroup(cap3));
+        assertEquals("hi123foobar", lastOnly.firstMatch("hi123foobar").get().group(0));
+        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().group(1));
+        assertEquals("123", lastOnly.firstMatch("hi123foobar").get().group(cap3));
     }
 
     @Test
@@ -51,18 +51,18 @@ public class CapturingTests {
         Regex r = concatenate(caps[0], caps[1], caps[2], caps[3], caps[4]);
 
         assertTrue(r.doesMatch("1h3 a"));
-        assertEquals("1h3 a", r.firstMatch("1h3 a").get().getGroup(0));
-        assertEquals("1", r.firstMatch("1h3 a").get().getGroup(1));
-        assertEquals("h", r.firstMatch("1h3 a").get().getGroup(2));
-        assertEquals("3", r.firstMatch("1h3 a").get().getGroup(3));
-        assertEquals(" ", r.firstMatch("1h3 a").get().getGroup(4));
-        assertEquals("a", r.firstMatch("1h3 a").get().getGroup(5));
+        assertEquals("1h3 a", r.firstMatch("1h3 a").get().group(0));
+        assertEquals("1", r.firstMatch("1h3 a").get().group(1));
+        assertEquals("h", r.firstMatch("1h3 a").get().group(2));
+        assertEquals("3", r.firstMatch("1h3 a").get().group(3));
+        assertEquals(" ", r.firstMatch("1h3 a").get().group(4));
+        assertEquals("a", r.firstMatch("1h3 a").get().group(5));
 
-        assertEquals("1", r.firstMatch("1h3 a").get().getGroup(caps[0]));
-        assertEquals("h", r.firstMatch("1h3 a").get().getGroup(caps[1]));
-        assertEquals("3", r.firstMatch("1h3 a").get().getGroup(caps[2]));
-        assertEquals(" ", r.firstMatch("1h3 a").get().getGroup(caps[3]));
-        assertEquals("a", r.firstMatch("1h3 a").get().getGroup(caps[4]));
+        assertEquals("1", r.firstMatch("1h3 a").get().group(caps[0]));
+        assertEquals("h", r.firstMatch("1h3 a").get().group(caps[1]));
+        assertEquals("3", r.firstMatch("1h3 a").get().group(caps[2]));
+        assertEquals(" ", r.firstMatch("1h3 a").get().group(caps[3]));
+        assertEquals("a", r.firstMatch("1h3 a").get().group(caps[4]));
     }
 
     @Test
@@ -77,20 +77,20 @@ public class CapturingTests {
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
         RegexMatch m = r.firstMatch("123 a-41abba").get();
-        assertEquals("123 a-41abba", m.getGroup(0));
-        assertEquals("123 a-41abba", m.getGroup(1));
-        assertEquals("123 a", m.getGroup(2));
-        assertEquals("123", m.getGroup(3));
-        assertEquals("a", m.getGroup(4));
-        assertEquals("41abba", m.getGroup(5));
-        assertEquals("41", m.getGroup(6));
+        assertEquals("123 a-41abba", m.group(0));
+        assertEquals("123 a-41abba", m.group(1));
+        assertEquals("123 a", m.group(2));
+        assertEquals("123", m.group(3));
+        assertEquals("a", m.group(4));
+        assertEquals("41abba", m.group(5));
+        assertEquals("41", m.group(6));
 
-        assertEquals("123 a-41abba", m.getGroup(capOuter));
-        assertEquals("123 a", m.getGroup(capMiddle1));
-        assertEquals("123", m.getGroup(capInner1));
-        assertEquals("a", m.getGroup(capInner2));
-        assertEquals("41abba", m.getGroup(capMiddle2));
-        assertEquals("41", m.getGroup(capInner3));
+        assertEquals("123 a-41abba", m.group(capOuter));
+        assertEquals("123 a", m.group(capMiddle1));
+        assertEquals("123", m.group(capInner1));
+        assertEquals("a", m.group(capInner2));
+        assertEquals("41abba", m.group(capMiddle2));
+        assertEquals("41", m.group(capInner3));
     }
 
     @Test
@@ -100,11 +100,11 @@ public class CapturingTests {
         Regex r1 = concatenate(c1, c1, c1);
         assertTrue(r1.doesMatch("123"));
         RegexMatch m1 = r1.firstMatch("123 a-41abba").get();
-        assertEquals("123", m1.getGroup(0));
-        assertEquals("1", m1.getGroup(1));
-        assertEquals("2", m1.getGroup(2));
-        assertEquals("3", m1.getGroup(3));
-        assertEquals("3", m1.getGroup(c1));
+        assertEquals("123", m1.group(0));
+        assertEquals("1", m1.group(1));
+        assertEquals("2", m1.group(2));
+        assertEquals("3", m1.group(3));
+        assertEquals("3", m1.group(c1));
 
         CapturingGroup capInner1 = capture(anyAmount(DIGIT));
         CapturingGroup capInner2 = capture(oneOf("a", "b", "c"));
@@ -115,19 +115,19 @@ public class CapturingTests {
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
         RegexMatch m = r.firstMatch("123 a-41abba").get();
-        assertEquals("123 a-41abba", m.getGroup(0));
-        assertEquals("123 a-41abba", m.getGroup(1));
-        assertEquals("123 a", m.getGroup(2));
-        assertEquals("123", m.getGroup(3));
-        assertEquals("a", m.getGroup(4));
-        assertEquals("41abba", m.getGroup(5));
-        assertEquals("41", m.getGroup(6));
+        assertEquals("123 a-41abba", m.group(0));
+        assertEquals("123 a-41abba", m.group(1));
+        assertEquals("123 a", m.group(2));
+        assertEquals("123", m.group(3));
+        assertEquals("a", m.group(4));
+        assertEquals("41abba", m.group(5));
+        assertEquals("41", m.group(6));
 
-        assertEquals("123 a-41abba", m.getGroup(capOuter));
-        assertEquals("123 a", m.getGroup(capMiddle1));
-        assertEquals("a", m.getGroup(capInner2));
-        assertEquals("41abba", m.getGroup(capMiddle2));
-        assertEquals("41", m.getGroup(capInner1));
+        assertEquals("123 a-41abba", m.group(capOuter));
+        assertEquals("123 a", m.group(capMiddle1));
+        assertEquals("a", m.group(capInner2));
+        assertEquals("41abba", m.group(capMiddle2));
+        assertEquals("41", m.group(capInner1));
     }
 
     @Test
@@ -188,19 +188,19 @@ public class CapturingTests {
         Regex r = concatenate(LINE_START, capOuter, LINE_END);
         assertTrue(r.doesMatch("123 a-41abba"));
         RegexMatch m = r.firstMatch("123 a-41abba").get();
-        assertEquals("123 a-41abba", m.getGroup(0));
-        assertEquals("123 a-41abba", m.getGroup(1));
-        assertEquals("123 a", m.getGroup(2));
-        assertEquals("123", m.getGroup(3));
-        assertEquals("a", m.getGroup(4));
-        assertEquals("41abba", m.getGroup(5));
-        assertEquals("41", m.getGroup(6));
+        assertEquals("123 a-41abba", m.group(0));
+        assertEquals("123 a-41abba", m.group(1));
+        assertEquals("123 a", m.group(2));
+        assertEquals("123", m.group(3));
+        assertEquals("a", m.group(4));
+        assertEquals("41abba", m.group(5));
+        assertEquals("41", m.group(6));
 
-        assertEquals("123 a-41abba", m.getGroup(capOuter));
-        assertEquals("123 a", m.getGroup(capMiddle1));
-        assertEquals("a", m.getGroup(capInner2));
-        assertEquals("41abba", m.getGroup(capMiddle2));
-        assertEquals("41", m.getGroup(capInner1));
+        assertEquals("123 a-41abba", m.group(capOuter));
+        assertEquals("123 a", m.group(capMiddle1));
+        assertEquals("a", m.group(capInner2));
+        assertEquals("41abba", m.group(capMiddle2));
+        assertEquals("41", m.group(capInner1));
     }
 
     @Test

@@ -3,16 +3,8 @@
  */
 package com.github.ermay12.regex;
 
-import static com.github.ermay12.regex.CapturingGroup.*;
-import static com.github.ermay12.regex.CharacterClass.*;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-import java.util.stream.Stream;
+import java.util.regex.Matcher;
 
 /**
  * This class represents a compiled Regular expression. Instances of this class are immutable and
@@ -236,7 +228,7 @@ public class Regex extends RegexLiteral {
    *
    * @param components the sub-components of the regular expression
    */
-  public Regex(RegexLiteral... components) {
+  Regex(RegexLiteral... components) {
     super(components);
   }
 
@@ -347,6 +339,14 @@ public class Regex extends RegexLiteral {
    * The start of a line. If multi-line mode is off, then this matches the start of input
    */
   public static final Regex LINE_START = new Regex("^");
+  /**
+   * Any boundary to a word character
+   */
+  public static final Regex WORD_BOUNDARY = new Regex("\\b");
+  /**
+   * Any non boundary to a word character
+   */
+  public static final Regex NOT_WORD_BOUNDARY = new Regex("\\B");
 
   /**
    * The end of a line. If multi-line mode is off, then this matches the end of input
