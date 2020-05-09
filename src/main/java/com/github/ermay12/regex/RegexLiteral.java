@@ -97,7 +97,7 @@ public abstract class RegexLiteral {
         } else {
           return null;
         }
-      }).takeWhile(match-> match != null);
+      }).takeWhile(match -> match != null);
     } else {
       return Stream.empty();
     }

@@ -13,9 +13,9 @@ public class RegexMatch {
 
   RegexMatch(Matcher m, RegexLiteral regex, int index) {
     this.matchString = m.group();
-    int numGroups = m.groupCount()+1;
+    int numGroups = m.groupCount() + 1;
     this.groups = new ArrayList<>();
-    for(int i = 0; i < numGroups; i++){
+    for (int i = 0; i < numGroups; i++) {
       groups.add(m.group(i));
     }
     this.regex = regex;

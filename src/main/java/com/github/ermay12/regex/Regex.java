@@ -691,7 +691,7 @@ public class Regex extends RegexLiteral {
    */
   public static Regex oneOf(CharSequence... ss) {
     assert (ss.length > 0); // Should not fail because you cannot call
-                            // oneOf with no arguments due to overloading
+    // oneOf with no arguments due to overloading
     if (ss.length > 1) {
       StringBuilder regex = new StringBuilder();
       regex.append("(?:");
@@ -716,7 +716,7 @@ public class Regex extends RegexLiteral {
    */
   public static Regex oneOf(RegexLiteral... rs) {
     assert (rs.length > 0); // Should not fail because you cannot call
-                            // oneOf with no arguments due to overloading
+    // oneOf with no arguments due to overloading
     if (rs.length > 1) {
       Regex regex = new Regex("");
       StringBuilder b = new StringBuilder();
