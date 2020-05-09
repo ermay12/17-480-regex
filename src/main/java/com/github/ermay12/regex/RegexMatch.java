@@ -14,6 +14,12 @@ public final class RegexMatch {
   private final List<Integer> groupStartIndexes;
   private final List<Integer> groupStopIndexes;
 
+  /**
+   * Creates an immutable regex match object.
+   * @param m a matcher object that has already matched this regex match
+   * @param regex the regex used to find this match
+   * @param matchIndex the index relative to the original string
+   */
   RegexMatch(Matcher m, RegexLiteral regex, int matchIndex) {
     this.matchString = m.group();
     int numGroups = m.groupCount() + 1;
@@ -31,52 +37,100 @@ public final class RegexMatch {
     this.matchStopIndex = m.end();
   }
 
-
-  public String getMatchString() {
+  /**
+   * Gets the matched string
+   * @return the matched string
+   */
+  public String matchString() {
     return matchString;
   }
+  /**
+   * gets the string of a given group
+   * @param i the group index.  0 always returns the match string. 1 returns the first group.
+   * @return the group string
+   */
+  public String group(int i) {
+    return this.groups.get(i);
+  }
 
-  public String getGroup(CapturingGroup group) {
+  /**
+   * gets the string of a given group
+   * @param group the group within the match
+   * @return the group string
+   */
+  public String group(CapturingGroup group) {
     if (!this.regex.groupToIndex.containsKey(group)) {
       throw new IllegalArgumentException("Group passed in is not present in regex!");
     }
     return groups.get(this.regex.groupToIndex.get(group));
   }
 
+
+  /**
+   * Gets the index of this match relative to all matches in the original string.
+   * @return the index of this match
+   */
   public int matchIndex() {
     return matchIndex;
   }
 
+  /**
+   * gets the start index of this match relative to the original string
+   * @return the start index of this match relative to the original string
+   */
   public int matchStartIndex(){
     return this.matchStartIndex;
   }
 
-  public int getMatchStopIndex(){
+  /**
+   * Gets the index of the character after the last character in this match in the original string
+   * @return the index of the character after the last character in this match in the original string
+   */
+  public int matchStopIndex(){
     return this.matchStopIndex;
   }
 
-  public int getGroupStartIndex(int i){
+  /**
+   * Gets the index of the start of a given group relative to the original string
+   * @param i the group index
+   * @returnindex of the start of a given group relative to the original string
+   */
+  public int groupStartIndex(int i){
     return groupStartIndexes.get(i);
   }
 
-  public int getGroupStartIndex(CapturingGroup group){
+  /**
+   * Gets the index of the start of a given group relative to the original string
+   * @param group the group
+   * @returnindex of the start of a given group relative to the original string
+   */
+  public int groupStartIndex(CapturingGroup group){
     return groupStartIndexes.get(this.regex.groupToIndex.get(group));
   }
 
-
-  public int getGroupStopIndex(int i){
+  /**
+   * Gets the index of the end of a given group relative to the original string
+   * @param i the group index.  0 represents the whole match.  1 represents the first group
+   * @returnindex of the end of a given group relative to the original string
+   */
+  public int groupStopIndex(int i){
     return groupStopIndexes.get(i);
   }
 
-  public int getGroupStopIndex(CapturingGroup group){
+  /**
+   * Gets the index of the end of a given group relative to the original string
+   * @param group the group
+   * @returnindex of the end of a given group relative to the original string
+   */
+  public int groupStopIndex(CapturingGroup group){
     return groupStopIndexes.get(this.regex.groupToIndex.get(group));
   }
 
 
-  public String getGroup(int number) {
-    return this.groups.get(number);
-  }
-
+  /**
+   * Gets the matched string
+   * @return the matched string
+   */
   @Override
   public String toString() {
     return matchString;
