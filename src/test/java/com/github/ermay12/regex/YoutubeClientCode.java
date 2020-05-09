@@ -4,15 +4,13 @@ import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
-import static com.github.ermay12.regex.CapturingGroup.*;
-import static org.junit.Assert.assertEquals;
 
-public class YoutubeTest {
+public class YoutubeClientCode {
     @Test
-    public void youtubeTest() {
-        Regex regex = new Regex(
+    public void checkYoutubeLink() {
+        Regex regex = concatenate(
                 LINE_START,
-                anyAmount(CharacterClass.WILDCARD),
+                anyAmount(WILDCARD),
                 oneOf(
                         string("youtu.be/"),
                         string("v/"),
@@ -23,10 +21,13 @@ public class YoutubeTest {
                 optional("?"),
                 optional("v"),
                 optional("="),
-                capture(anyAmount(
-                        not(CharacterClass.union('#', '&', '?'))
-                )),
-                anyAmount(CharacterClass.WILDCARD)
+                anyAmount(
+                        not(union('#', '&', '?'))
+                ),
+                anyAmount(WILDCARD)
         );
+
+        String input = "Check this out! https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        assert(regex.doesMatch(input));
     }
 }

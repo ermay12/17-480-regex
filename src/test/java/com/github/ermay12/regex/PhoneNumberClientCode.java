@@ -2,14 +2,14 @@ package com.github.ermay12.regex;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
-import static com.github.ermay12.regex.CapturingGroup.*;
-import static org.junit.Assert.assertEquals;
 
-public class PhoneNumberTest {
+public class PhoneNumberClientCode {
     @Test
-    public void testPhoneNumber() {
+    public void checkPhoneNumber() {
         Regex separator =
                 optional(
                         oneOf(
@@ -22,9 +22,11 @@ public class PhoneNumberTest {
 
         Regex phoneNumber = separator;
         for (int i = 0; i < 10; i++) {
-            phoneNumber = new Regex(phoneNumber,
-                                    capture(DIGIT),
-                                    separator);
+            phoneNumber = concatenate(phoneNumber, DIGIT, separator);
         }
+
+        String input = "Call me at (908)555-1234";
+        Optional<RegexMatch> result = phoneNumber.firstMatch(input);
+        assert(result.isPresent());
     }
 }
