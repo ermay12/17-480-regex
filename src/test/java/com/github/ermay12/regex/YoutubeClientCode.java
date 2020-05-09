@@ -1,15 +1,11 @@
 package com.github.ermay12.regex;
 
-import org.junit.Test;
-
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
-import static org.junit.Assert.assertEquals;
 
-public class YoutubeTest {
-    @Test
-    public void youtubeTest() {
+public class YoutubeClientCode {
+    public static void main(String[] args) {
         Regex regex = new Regex(
                 LINE_START,
                 anyAmount(CharacterClass.WILDCARD),
@@ -28,5 +24,6 @@ public class YoutubeTest {
                 )),
                 anyAmount(CharacterClass.WILDCARD)
         );
+        System.out.println(regex);
     }
 }

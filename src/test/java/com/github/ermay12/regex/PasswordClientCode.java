@@ -1,14 +1,10 @@
 package com.github.ermay12.regex;
 
-import org.junit.Test;
-
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CharacterClass.*;
-import static org.junit.Assert.assertEquals;
 
-public class PasswordTest {
-    @Test
-    public void testPassword() {
+public class PasswordClientCode {
+    public static void main(String[] args) {
         Regex regex = new Regex(
                 LINE_START,
                 lookahead(new Regex(anyAmount(WILDCARD), single(range('a', 'z')))),
@@ -18,5 +14,6 @@ public class PasswordTest {
                 repeatAtLeast(WILDCARD, 8),
                 LINE_END
         );
+        System.out.println(regex);
     }
 }

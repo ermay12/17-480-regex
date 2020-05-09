@@ -1,14 +1,11 @@
 package com.github.ermay12.regex;
 
-import org.junit.Test;
 
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
-import static org.junit.Assert.*;
 
-public class EmailTest {
-    @Test
-    public void testEmail() {
+public class EmailClientCode {
+    public static void main(String[] args) {
         Regex regex = new Regex(
                 LINE_START,
                 capture(atLeastOne(CharacterClass.WILDCARD)),
@@ -16,5 +13,6 @@ public class EmailTest {
                 capture(atLeastOne(CharacterClass.WILDCARD)),
                 LINE_END
         );
+        System.out.println(regex);
     }
 }

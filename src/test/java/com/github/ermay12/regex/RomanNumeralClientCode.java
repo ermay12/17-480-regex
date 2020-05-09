@@ -1,14 +1,10 @@
 package com.github.ermay12.regex;
 
-import org.junit.Test;
-
 import static com.github.ermay12.regex.Regex.*;
 import static com.github.ermay12.regex.CapturingGroup.*;
-import static org.junit.Assert.assertEquals;
 
-public final class RomanNumeralTest {
-    @Test
-    public void testRomanNumeral() {
+public class RomanNumeralClientCode {
+    public static void main(String[] args) {
         Regex regex = new Regex(
                 LINE_START,
                 lookahead(CharacterClass.WILDCARD),
@@ -32,5 +28,6 @@ public final class RomanNumeralTest {
                         )
                 )
         );
+        System.out.println(regex);
     }
 }
