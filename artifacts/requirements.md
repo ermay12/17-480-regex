@@ -18,8 +18,14 @@ The client code of this API should more readable than Java's existing API. This 
 ## Approachability
 This API should be more approachable than Java's existing API. This requirement should be benchmarked by having real programmers use the API and asking them how approachable they found it to be.
 
+### Abstract away Regex idiosyncracies
+In order to improve approachability, this API should abstract away Regex idiosyncracies, such as requiring certain objects to be wrapped in a capturing or non-capturing group.
+
 ## Verbosity
 Although client code of this API will inevitably more verbose than the original API, the API should avoid unnecessary verbosity its naming and use.
+
+### Don't force users to use `import static` in order to have code that is not overly verbose
+As a minor subgoal to verbosity, client code of this API should still be readable and not overly verbose even without the use of `import static`
 
 ## Documentation
 Each class, method, and field of the API must be clearly documented, especially keeping in mind those who may be unfamiliar with Regex terms and concepts.
