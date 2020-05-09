@@ -13,8 +13,7 @@ public class RegexMatchUnitTests {
     CapturingGroup group1 = capture(repeatExactly(WORD_CHARACTER, 2));
     CapturingGroup group2 = capture(repeatExactly(WORD_CHARACTER, 2));
     CapturingGroup group3 = capture(anyAmount(WORD_CHARACTER));
-    //todo add word boundary
-    Regex regex = concatenate(fromRawRegex("\\b"), group1, group2, group3);
+    Regex regex = concatenate(WORD_BOUNDARY, group1, group2, group3);
 
     String bunchOfWords = "this is a list of words of varying length";
     RegexMatch match0 = regex.getMatch(bunchOfWords, 0).get();  //this
