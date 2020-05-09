@@ -3,6 +3,10 @@
  */
 package com.github.ermay12.regex;
 
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -191,15 +195,45 @@ import java.util.stream.Stream;
  */
 public class Regex extends RegexLiteral {
 
-  Regex(String... components) {
+  /*
+   ****************
+   * Constructors *
+   ****************
+   */
+
+  /**
+   * Constructs a Regular Expression from the regular expression subcomponents.
+   * Note that this method does not escape any characters
+   *
+   * @param components the sub-components of the regular expression
+   */
+  Regex(CharSequence... components) {
     super(components);
   }
 
-  Regex(RegexLiteral base, String... components) {
+
+  /**
+   * Constructs a Regular Expression from the regular expression subcomponents.
+   * Takes group indexing regex from a base regex.
+   * Note that this method does not escape any characters
+   *
+   * @param base       the regex to copy group indexing info from
+   * @param components the sub-components of the regular expression
+   */
+  Regex(RegexLiteral base, CharSequence... components) {
     super(base, components);
   }
 
-  Regex(RegexLiteral... components) {
+  /**
+   * Constructs a regular expression from the given sub-components. The
+   * new Regex constructed will be the concatenation of all of the subcomponents.
+   * <p>
+   * In other words, if the subcomponents match "a", "b" and "c", then the new regular
+   * expression will match "abc"
+   *
+   * @param components the sub-components of the regular expression
+   */
+  public Regex(RegexLiteral... components) {
     super(components);
   }
 
@@ -221,13 +255,13 @@ public class Regex extends RegexLiteral {
   }
 
   /**
-   * Returns a regex that matches a given string exactly. The given string has any special regex characters
+   * Returns a regex that matches a given CharSequence exactly. The given CharSequence has any special regex characters
    * escaped automatically.
    *
-   * @param s the string to match against
-   * @return a regex that matches the given string
+   * @param s the CharSequence to match against
+   * @return a regex that matches the given CharSequence
    */
-  public static Regex string(String s) {
+  public static Regex string(CharSequence s) {
     return new Regex(sanitized(s));
   }
 
@@ -238,7 +272,7 @@ public class Regex extends RegexLiteral {
    * @param regex the sub-components of the regular expression
    * @return a new regular expression matching the given regex
    */
-  public static Regex fromRawRegex(String regex) {
+  public static Regex fromRawRegex(CharSequence regex) {
     return new Regex(regex);
   }
   /*
@@ -283,10 +317,10 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string either once or not at all
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @return a regex which matches any string that consists of the given string repeated at most once
    */
-  public static Regex optional(String s) {
+  public static Regex optional(CharSequence s) {
     return optional(s, EvaluationMethod.GREEDILY);
   }
 
@@ -304,11 +338,11 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches any string that consists of the given string either once or not at all
    * This uses the provide Evaluation method
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @param t the evaluation type
    * @return a regex which matches any string that consists of the given string repeated at most once
    */
-  public static Regex optional(String s, EvaluationMethod t) {
+  public static Regex optional(CharSequence s, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)), "?", t.toRegex());
     } else {
@@ -331,10 +365,10 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated any number of times.
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @return a regex which matches any string that consists of the given string repeated any number of times.
    */
-  public static Regex anyAmount(String s) {
+  public static Regex anyAmount(CharSequence s) {
     return anyAmount(s, EvaluationMethod.GREEDILY);
   }
 
@@ -352,11 +386,11 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches any string that consists of the given string repeated any number of times.
    * This uses the provide Evaluation method
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @param t the evaluation type
    * @return a regex which matches any string that consists of the given string repeated any number of times.
    */
-  public static Regex anyAmount(String s, EvaluationMethod t) {
+  public static Regex anyAmount(CharSequence s, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)), "*", t.toRegex());
     } else {
@@ -379,7 +413,7 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated at least once.
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @return a regex which matches any string that consists of the given string repeated at least once.
    */
   public static Regex atLeastOne(String s) {
@@ -399,11 +433,11 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated at least once.
    *
-   * @param s the string to compose on
+   * @param s the CharSequence to compose on
    * @param t the evaluation type
    * @return a regex which matches any string that consists of the given string repeated at least once.
    */
-  public static Regex atLeastOne(String s, EvaluationMethod t) {
+  public static Regex atLeastOne(CharSequence s, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)), "+", t.toRegex());
     } else {
@@ -426,12 +460,12 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated between min and max times
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param max the maximum number of times the character should repeat (inclusive)
    * @return a regex which matches any string that consists of the given string repeated between min and max times
    */
-  public static Regex repeat(String s, int min, int max) {
+  public static Regex repeat(CharSequence s, int min, int max) {
     return repeat(s, min, max, EvaluationMethod.GREEDILY);
   }
 
@@ -451,13 +485,13 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches any string that consists of the given string repeated between min and max times
    * This uses the provide Evaluation method
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param max the maximum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
    * @return a regex which matches any string that consists of the given string repeated between min and max times
    */
-  public static Regex repeat(String s, int min, int max, EvaluationMethod t) {
+  public static Regex repeat(CharSequence s, int min, int max, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)),
           "{", Integer.toString(min), ",",
@@ -489,11 +523,11 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated exactly amount times
    *
-   * @param s      the string to repeat
+   * @param s      the CharSequence to repeat
    * @param amount the number of times the regex should repeat
    * @return a regex which matches any string that consists of the given string repeated exactly amount times
    */
-  public static Regex repeatExactly(String s, int amount) {
+  public static Regex repeatExactly(CharSequence s, int amount) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)),
           "{", Integer.toString(amount), "}");
@@ -519,11 +553,11 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated at least min times
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @return a regex which matches any string that consists of the given string repeated at least min times
    */
-  public static Regex repeatAtLeast(String s, int min) {
+  public static Regex repeatAtLeast(CharSequence s, int min) {
     return repeatAtLeast(s, min, EvaluationMethod.GREEDILY);
   }
 
@@ -542,12 +576,12 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches any string that consists of the given string repeated at least min times
    * This uses the provide Evaluation method
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param min the minimum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
    * @return a regex which matches any string that consists of the given string repeated at least min times
    */
-  public static Regex repeatAtLeast(String s, int min, EvaluationMethod t) {
+  public static Regex repeatAtLeast(CharSequence s, int min, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)),
           "{", Integer.toString(min), ",}", t.toRegex());
@@ -575,11 +609,11 @@ public class Regex extends RegexLiteral {
   /**
    * Returns a regex which matches any string that consists of the given string repeated at most max times
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
    * @return a regex which matches any string that consists of the given string repeated at most max times
    */
-  public static Regex repeatAtMost(String s, int max) {
+  public static Regex repeatAtMost(CharSequence s, int max) {
     return repeatAtMost(s, max, EvaluationMethod.GREEDILY);
   }
 
@@ -598,12 +632,12 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches any string that consists of the given string repeated at most max times
    * This uses the provide Evaluation method
    *
-   * @param s   the string to repeat
+   * @param s   the CharSequence to repeat
    * @param max the maximum number of times the character should repeat (inclusive)
    * @param t   the evaluation type
    * @return a regex which matches any string that consists of the given string repeated at most max times
    */
-  public static Regex repeatAtMost(String s, int max, EvaluationMethod t) {
+  public static Regex repeatAtMost(CharSequence s, int max, EvaluationMethod t) {
     if (s.length() == 1) {
       return new Regex(sanitized(s.charAt(0)),
           "{0,", Integer.toString(max), "}", t.toRegex());
@@ -652,12 +686,12 @@ public class Regex extends RegexLiteral {
    * Returns a regex which matches one of the given strings. If no strings
    * are provided in the arguments, a regular expression matching nothing is returned
    *
-   * @param ss the strings that are the options
+   * @param ss the CharSequences that are the options
    * @return a regex which matches one of the given regular expressions
    */
-  public static Regex oneOf(String... ss) {
+  public static Regex oneOf(CharSequence... ss) {
     assert (ss.length > 0); // Should not fail because you cannot call
-    // oneOf with no arguments due to overloading
+                            // oneOf with no arguments due to overloading
     if (ss.length > 1) {
       StringBuilder regex = new StringBuilder();
       regex.append("(?:");
@@ -682,7 +716,7 @@ public class Regex extends RegexLiteral {
    */
   public static Regex oneOf(RegexLiteral... rs) {
     assert (rs.length > 0); // Should not fail because you cannot call
-    // oneOf with no arguments due to overloading
+                            // oneOf with no arguments due to overloading
     if (rs.length > 1) {
       Regex regex = new Regex("");
       StringBuilder b = new StringBuilder();
@@ -725,7 +759,7 @@ public class Regex extends RegexLiteral {
    * @return a regex that matches the same thing that the last instance of group matched.
    */
   public static Regex backReference(CapturingGroup group) {
-    return new Regex("\\k", group.label);
+    return new Regex("\\k<", group.label, ">");
   }
 
   /*

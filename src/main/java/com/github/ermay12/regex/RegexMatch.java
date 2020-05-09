@@ -1,18 +1,27 @@
 package com.github.ermay12.regex;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 
 public class RegexMatch {
   String matchString;
-  MatchResult match;
   RegexLiteral regex;
+  int index;
+  List<String> groups;
 
-  RegexMatch(MatchResult m, RegexLiteral regex) {
+  RegexMatch(Matcher m, RegexLiteral regex, int index) {
     this.matchString = m.group();
-    this.match = m;
+    int numGroups = m.groupCount()+1;
+    this.groups = new ArrayList<>();
+    for(int i = 0; i < numGroups; i++){
+      groups.add(m.group(i));
+    }
     this.regex = regex;
+    this.index = index;
   }
+
 
   public String getMatchString() {
     return matchString;
@@ -22,11 +31,15 @@ public class RegexMatch {
     if (!this.regex.groupToIndex.containsKey(group)) {
       throw new IllegalArgumentException("Group passed in is not present in regex!");
     }
-    return this.match.group(this.regex.groupToIndex.get(group));
+    return groups.get(this.regex.groupToIndex.get(group));
+  }
+
+  public int getIndex() {
+    return index;
   }
 
   public String getGroup(int number) {
-    return this.match.group(number);
+    return this.groups.get(number);
   }
 
   @Override
