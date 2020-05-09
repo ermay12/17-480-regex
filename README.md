@@ -1,5 +1,7 @@
 ![Java CI with Gradle](https://github.com/ermay12/17-480-regex/workflows/Java%20CI%20with%20Gradle/badge.svg)
 
+Final report found [here](https://docs.google.com/document/d/1RIbGxl4W1GHWGpPrQPv2mAbvK5lqsqRVA_fLOTqZiYQ/edit?usp=sharing)
+
 # 17-480-regex
 17-480 Final Project: redux of java.util.regex
 
